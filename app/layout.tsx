@@ -1,15 +1,24 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+
+import { ThemeProvider } from "next-themes";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+import { Geist_Mono, JetBrains_Mono } from "next/font/google";
+import { NextIntlClientProvider } from "next-intl";
+const geist_mono = Geist_Mono({
   subsets: ["latin"],
+  weight: ["600"],
+  variable: "--display-family",
 });
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const jetbrains_mono = JetBrains_Mono({
   subsets: ["latin"],
+  weight: ["400"],
+  variable: "--body-family",
+});
+const jetbrains_mono_mono = JetBrains_Mono({
+  subsets: ["latin"],
+  weight: ["400"],
+  variable: "--font-mono",
 });
 
 export const metadata: Metadata = {
@@ -23,11 +32,20 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geist_mono.variable} ${jetbrains_mono.variable} ${jetbrains_mono_mono.variable}`}
       >
-        {children}
+        <NextIntlClientProvider>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            {children}
+          </ThemeProvider>
+        </NextIntlClientProvider>
       </body>
     </html>
   );

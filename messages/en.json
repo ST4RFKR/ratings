@@ -1,0 +1,14 @@
+{
+  "header": {
+    "language-switcher": {
+      "lang": {
+        "en": "English",
+        "uk": "Ukrainian",
+        "ru": "Russian"
+      }
+    }
+  },
+  "main": {
+    "hello": "Hello world!"
+  }
+}
