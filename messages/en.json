@@ -6,6 +6,93 @@
         "uk": "Ukrainian",
         "ru": "Russian"
       }
+    },
+    "nav": {
+      "dashboard": "Dashboard",
+      "companies": "Companies",
+      "stores": "Stores",
+      "employees": "Employees"
+    },
+    "login": "Log in"
+  },
+  "dashboard": {
+    "nav": {
+      "dashboard": "Dashboard",
+      "stores": "Stores",
+      "employees": "Employees",
+      "reviews": "Reviews",
+      "new-review": "Add Review",
+      "stats": "Statistics"
+    },
+    "main": {
+      "avg_rating": "Average Rating",
+      "total_reviews": "Total Reviews",
+      "active_stores": "Active Stores",
+      "total_employees": "Total Employees",
+      "last-7-days": "Last 7 days"
+    },
+    "breadcrumbs": {
+      "dashboard": "Dashboard",
+      "stores": "Stores",
+      "employees": "Employees",
+      "reviews": "Reviews",
+      "new": "New",
+      "stats": "Statistics"
+    },
+    "user-nav": {
+      "profile": "Profile",
+      "logout": "Log out",
+      "role": "Admin"
+    },
+    "stores": {
+      "title": "Stores",
+      "description": "List of all stores",
+      "search": "Search stores...",
+      "table": {
+        "name": "Name",
+        "rating": "Rating",
+        "reviews": "Reviews",
+        "actions": "Actions",
+        "view": "View",
+        "edit": "Edit"
+      },
+      "analytics": {
+        "avg_rating": "Average Rating",
+        "total_reviews": "Total Reviews",
+        "top_store": "Top Performing Store",
+        "last_30_days": "Last 30 days"
+      }
+    },
+    "employees": {
+      "title": "Employees",
+      "description": "List of all employees",
+      "search": "Search employees...",
+      "table": {
+        "name": "Name",
+        "role": "Role",
+        "rating": "Rating",
+        "reviews": "Reviews",
+        "actions": "Actions",
+        "view": "View"
+      },
+      "analytics": {
+        "avg_rating": "Average Rating",
+        "total_reviews": "Total Reviews",
+        "top_employee": "Top Performing Employee",
+        "last_30_days": "Last 30 days"
+      }
+    },
+    "reviews": {
+      "title": "Reviews",
+      "description": "All employee reviews",
+      "new": {
+        "title": "Add Review",
+        "description": "New review addition form"
+      }
+    },
+    "stats": {
+      "title": "Statistics",
+      "description": "Statistics and analytics"
     }
   },
   "main": {

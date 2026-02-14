@@ -1,15 +1,28 @@
-"use client";
-import { LanguageSwitcher } from "@/shared/components/common/language-switcher/language-switcher";
-import { ModeToggle } from "@/shared/components/common/mode-toggle";
-import { useTranslations } from "next-intl";
+'use client';
 
+import { Button } from '@/shared/components/ui/button';
+
+import { useTranslations } from 'next-intl';
+import Link from 'next/link';
 export function Wrapper() {
-  const t = useTranslations("main");
+  const t = useTranslations('main');
   return (
-    <div>
-      <ModeToggle />
-      <LanguageSwitcher />
-      <h1>{t("hello")}</h1>
+    <div className='flex items-center justify-center flex-col gap-10'>
+      <div> ТУТ БУДЕТ ЛЕНДИНГ</div>
+      <div className='flex gap-4'>
+        <Button
+          variant={'outline'}
+          asChild
+        >
+          <Link href='/dashboard'>ПЕРЕЙТИ НА DASHBOARD</Link>
+        </Button>
+        <Button
+          variant={'default'}
+          asChild
+        >
+          <Link href='/create-company'>СОЗДАТЬ КОМПАНИЮ (ТЕСТ)</Link>
+        </Button>
+      </div>
     </div>
   );
 }
