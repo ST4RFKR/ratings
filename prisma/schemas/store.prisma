@@ -2,14 +2,14 @@ model Store {
   id   String @id @default(uuid())
   name String
 
-  email   String
-  address String
+  email   String?
+  address String?
 
-  rating         Float
+  rating         Float @default(0.0)
   employeesCount Int   @default(0) @map("employees_count")
   totalReview    Int   @default(0) @map("total_review")
 
-  description String
+  description String?
   industry    String
 
   company   Company @relation(fields: [companyId], references: [id])

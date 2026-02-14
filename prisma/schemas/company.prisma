@@ -1,11 +1,12 @@
+
 model Company {
   id   String @id @default(uuid())
   name String
 
-  address String
-  rating  Float
+  address String?
+  rating  Float   @default(0.0)
 
-  description String
+  description String?
   industry    String
 
   stores Store[]
