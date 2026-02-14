@@ -1,101 +1,127 @@
 {
-  "header": {
-    "language-switcher": {
-      "lang": {
-        "en": "Англійська",
-        "uk": "Українська",
-        "ru": "Російська"
-      }
+    "header": {
+        "brand": "Рейтинги",
+        "language-switcher": {
+            "lang": {
+                "en": "Англійська",
+                "uk": "Українська",
+                "ru": "Російська"
+            }
+        },
+        "nav": {
+            "dashboard": "Панель",
+            "companies": "Компанії",
+            "stores": "Магазини",
+            "employees": "Працівники",
+            "about-us": "Про нас",
+            "services": "Послуги",
+            "work": "Робота",
+            "team": "Команда",
+            "pricing": "Ціни",
+            "awards": "Нагороди"
+        },
+        "login": "Вхід"
     },
-    "nav": {
-      "dashboard": "Панель",
-      "companies": "Компанії",
-      "stores": "Магазини",
-      "employees": "Працівники"
-    },
-    "login": "Увійти"
-  },
-  "dashboard": {
-    "nav": {
-      "dashboard": "Дашборд",
-      "stores": "Магазини",
-      "employees": "Співробітники",
-      "reviews": "Оцінки",
-      "new-review": "Додати оцінку",
-      "stats": "Статистика"
+    "dashboard": {
+        "nav": {
+            "dashboard": "Дашборд",
+            "stores": "Магазини",
+            "employees": "Співробітники",
+            "reviews": "Оцінки",
+            "new-review": "Додати оцінку",
+            "stats": "Статистика"
+        },
+        "main": {
+            "avg_rating": "Ср. рейтинг",
+            "total_reviews": "Всього відгуків",
+            "active_stores": "Активні магазини",
+            "total_employees": "Всього співробітників",
+            "last-7-days": "За останні 7 днів"
+        },
+        "breadcrumbs": {
+            "dashboard": "Дашборд",
+            "stores": "Магазини",
+            "employees": "Співробітники",
+            "reviews": "Оцінки",
+            "new": "Додати",
+            "stats": "Статистика"
+        },
+        "user-nav": {
+            "profile": "Профіль",
+            "logout": "Вийти",
+            "role": "Адмін"
+        },
+        "stores": {
+            "title": "Магазини",
+            "description": "Список усіх магазинів",
+            "search": "Пошук магазинів...",
+            "table": {
+                "name": "Назва",
+                "rating": "Рейтинг",
+                "reviews": "Відгуки",
+                "actions": "Дії",
+                "view": "Переглянути",
+                "edit": "Редагувати"
+            },
+            "analytics": {
+                "avg_rating": "Ср. рейтинг",
+                "total_reviews": "Всього відгуків",
+                "top_store": "Найкращий магазин",
+                "last_30_days": "За останні 30 днів"
+            }
+        },
+        "employees": {
+            "title": "Співробітники",
+            "description": "Список усіх співробітників",
+            "search": "Пошук співробітників...",
+            "table": {
+                "name": "Ім'я",
+                "role": "Роль",
+                "rating": "Рейтинг",
+                "reviews": "Відгуки",
+                "actions": "Дії",
+                "view": "Переглянути"
+            },
+            "analytics": {
+                "avg_rating": "Ср. рейтинг",
+                "total_reviews": "Всього відгуків",
+                "top_employee": "Найкращий співробітник",
+                "last_30_days": "За останні 30 днів"
+            }
+        },
+        "reviews": {
+            "title": "Оцінки",
+            "description": "Всі оцінки співробітників",
+            "new": {
+                "title": "Додати оцінку",
+                "description": "Форма додавання нової оцінки"
+            }
+        },
+        "stats": {
+            "title": "Статистика",
+            "description": "Статистика та аналітика"
+        }
     },
     "main": {
-      "avg_rating": "Ср. рейтинг",
-      "total_reviews": "Всього відгуків",
-      "active_stores": "Активні магазини",
-      "total_employees": "Всього співробітників",
-      "last-7-days": "За останні 7 днів"
+        "hello": "Привіт світ!"
     },
-    "breadcrumbs": {
-      "dashboard": "Дашборд",
-      "stores": "Магазини",
-      "employees": "Співробітники",
-      "reviews": "Оцінки",
-      "new": "Додати",
-      "stats": "Статистика"
-    },
-    "user-nav": {
-      "profile": "Профіль",
-      "logout": "Вийти",
-      "role": "Адмін"
-    },
-    "stores": {
-      "title": "Магазини",
-      "description": "Список усіх магазинів",
-      "search": "Пошук магазинів...",
-      "table": {
-        "name": "Назва",
-        "rating": "Рейтинг",
-        "reviews": "Відгуки",
-        "actions": "Дії",
-        "view": "Переглянути",
-        "edit": "Редагувати"
-      },
-      "analytics": {
-        "avg_rating": "Ср. рейтинг",
-        "total_reviews": "Всього відгуків",
-        "top_store": "Найкращий магазин",
-        "last_30_days": "За останні 30 днів"
-      }
-    },
-    "employees": {
-      "title": "Співробітники",
-      "description": "Список усіх співробітників",
-      "search": "Пошук співробітників...",
-      "table": {
-        "name": "Ім'я",
-        "role": "Роль",
-        "rating": "Рейтинг",
-        "reviews": "Відгуки",
-        "actions": "Дії",
-        "view": "Переглянути"
-      },
-      "analytics": {
-        "avg_rating": "Ср. рейтинг",
-        "total_reviews": "Всього відгуків",
-        "top_employee": "Найкращий співробітник",
-        "last_30_days": "За останні 30 днів"
-      }
-    },
-    "reviews": {
-      "title": "Оцінки",
-      "description": "Всі оцінки співробітників",
-      "new": {
-        "title": "Додати оцінку",
-        "description": "Форма додавання нової оцінки"
-      }
-    },
-    "stats": {
-      "title": "Статистика",
-      "description": "Статистика та аналітика"
+    "auth": {
+        "sign-in": {
+            "title": "Вхід",
+            "description": "З поверненням",
+            "sign-up-link": "Немає аккаунту?",
+            "sign-up-text": "Зареєструватися"
+        },
+        "sign-up": {
+            "title": "Реєстрація",
+            "description": "Створіть свій аккаунт",
+            "sign-in-link": "Вже є аккаунт?",
+            "sign-in-text": "Увійти"
+        },
+        "create-company": {
+            "title": "Створити компанію",
+            "welcome": "Ласкаво просимо!",
+            "description": "Для початку роботи, будь ласка, створіть профіль вашої компанії."
+        }
     }
-  },
-  "main": {
-    "hello": "Привіт світ!"
-  }
 }

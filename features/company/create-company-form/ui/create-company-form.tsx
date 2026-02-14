@@ -15,77 +15,81 @@ import { Textarea } from '@/shared/components/ui/textarea';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
+
+import { ROUTES } from '@/shared/config/routes';
+import { useTranslations } from 'next-intl';
 import { CreateCompanyFormValues, createCompanySchema } from '../model/create-company-schema';
 
 export const CreateCompanyForm = () => {
-  const router = useRouter();
-  const form = useForm<CreateCompanyFormValues>({
-    resolver: zodResolver(createCompanySchema),
-    defaultValues: {
-      name: '',
-      industry: '',
-      description: '',
-    },
-  });
+    const t = useTranslations('auth');
+    const router = useRouter();
+    const form = useForm<CreateCompanyFormValues>({
+        resolver: zodResolver(createCompanySchema),
+        defaultValues: {
+            name: '',
+            industry: '',
+            description: '',
+        },
+    });
 
-  function onSubmit(values: CreateCompanyFormValues) {
-    console.log('Company form submitted:', values);
-    // In a real app, we would send this to the API
-    // On success, redirect to dashboard
-    router.push('/dashboard');
-  }
+    function onSubmit(values: CreateCompanyFormValues) {
+        console.log('Company form submitted:', values);
+        // In a real app, we would send this to the API
+        // On success, redirect to dashboard
+        router.push(ROUTES.DASHBOARD.HOME);
+    }
 
-  return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 w-full max-w-md">
-        <FormField
-          control={form.control}
-          name="name"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Company Name</FormLabel>
-              <FormControl>
-                <Input placeholder="Enter company name" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="industry"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Industry</FormLabel>
-              <FormControl>
-                <Input placeholder="e.g. Retail, Tech, Hospitality" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="description"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Description</FormLabel>
-              <FormControl>
-                <Textarea 
-                  placeholder="Tell us a bit about your company" 
-                  className="resize-none" 
-                  {...field} 
+    return (
+        <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 w-full max-w-md">
+                <FormField
+                    control={form.control}
+                    name="name"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Company Name</FormLabel>
+                            <FormControl>
+                                <Input placeholder="Enter company name" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
                 />
-              </FormControl>
-              <FormDescription>
-                Briefly describe what your company does.
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <Button type="submit" className="w-full">Create Company</Button>
-      </form>
-    </Form>
-  );
+                <FormField
+                    control={form.control}
+                    name="industry"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Industry</FormLabel>
+                            <FormControl>
+                                <Input placeholder="e.g. Retail, Tech, Hospitality" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+                <FormField
+                    control={form.control}
+                    name="description"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Description</FormLabel>
+                            <FormControl>
+                                <Textarea
+                                    placeholder="Tell us a bit about your company"
+                                    className="resize-none"
+                                    {...field}
+                                />
+                            </FormControl>
+                            <FormDescription>
+                                Briefly describe what your company does.
+                            </FormDescription>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+                <Button type="submit" className="w-full">{t('create-company.title')}</Button>
+            </form>
+        </Form>
+    );
 };

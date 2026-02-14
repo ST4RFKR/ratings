@@ -1,0 +1,22 @@
+model Store {
+  id   String @id @default(uuid())
+  name String
+
+  email   String
+  address String
+
+  rating         Float
+  employeesCount Int   @default(0) @map("employees_count")
+  totalReview    Int   @default(0) @map("total_review")
+
+  description String
+  industry    String
+
+  company   Company @relation(fields: [companyId], references: [id])
+  companyId String  @map("company_id")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("store")
+}

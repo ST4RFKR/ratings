@@ -1,101 +1,127 @@
 {
-  "header": {
-    "language-switcher": {
-      "lang": {
-        "en": "Английский",
-        "uk": "Украинский",
-        "ru": "Русский"
-      }
+    "header": {
+        "brand": "Рейтинги",
+        "language-switcher": {
+            "lang": {
+                "en": "Английский",
+                "uk": "Украинский",
+                "ru": "Русский"
+            }
+        },
+        "nav": {
+            "dashboard": "Панель",
+            "companies": "Компании",
+            "stores": "Магазины",
+            "employees": "Сотрудники",
+            "about-us": "О нас",
+            "services": "Услуги",
+            "work": "Работа",
+            "team": "Команда",
+            "pricing": "Цены",
+            "awards": "Награды"
+        },
+        "login": "Вход"
     },
-    "nav": {
-      "dashboard": "Панель",
-      "companies": "Компании",
-      "stores": "Магазины",
-      "employees": "Сотрудники"
-    },
-    "login": "Войти"
-  },
-  "dashboard": {
-    "nav": {
-      "dashboard": "Дашборд",
-      "stores": "Магазины",
-      "employees": "Сотрудники",
-      "reviews": "Оценки",
-      "new-review": "Добавить оценку",
-      "stats": "Статистика"
+    "dashboard": {
+        "nav": {
+            "dashboard": "Дашборд",
+            "stores": "Магазины",
+            "employees": "Сотрудники",
+            "reviews": "Оценки",
+            "new-review": "Добавить оценку",
+            "stats": "Статистика"
+        },
+        "main": {
+            "avg_rating": "Ср. рейтинг",
+            "total_reviews": "Всего отзывов",
+            "active_stores": "Активные магазины",
+            "total_employees": "Всего сотрудников",
+            "last-7-days": "За последние 7 дней"
+        },
+        "breadcrumbs": {
+            "dashboard": "Дашборд",
+            "stores": "Магазины",
+            "employees": "Сотрудники",
+            "reviews": "Оценки",
+            "new": "Добавить",
+            "stats": "Статистика"
+        },
+        "user-nav": {
+            "profile": "Профиль",
+            "logout": "Выйти",
+            "role": "Админ"
+        },
+        "stores": {
+            "title": "Магазины",
+            "description": "Список всех магазинов",
+            "search": "Поиск магазинов...",
+            "table": {
+                "name": "Название",
+                "rating": "Рейтинг",
+                "reviews": "Отзывы",
+                "actions": "Действия",
+                "view": "Просмотреть",
+                "edit": "Редактировать"
+            },
+            "analytics": {
+                "avg_rating": "Ср. рейтинг",
+                "total_reviews": "Всего отзывов",
+                "top_store": "Лучший магазин",
+                "last_30_days": "За последние 30 дней"
+            }
+        },
+        "employees": {
+            "title": "Сотрудники",
+            "description": "Список всех сотрудников",
+            "search": "Поиск сотрудников...",
+            "table": {
+                "name": "Имя",
+                "role": "Роль",
+                "rating": "Рейтинг",
+                "reviews": "Отзывы",
+                "actions": "Действия",
+                "view": "Просмотреть"
+            },
+            "analytics": {
+                "avg_rating": "Ср. рейтинг",
+                "total_reviews": "Всего отзывов",
+                "top_employee": "Лучший сотрудник",
+                "last_30_days": "За последние 30 дней"
+            }
+        },
+        "reviews": {
+            "title": "Оценки",
+            "description": "Все оценки сотрудников",
+            "new": {
+                "title": "Добавить оценку",
+                "description": "Форма добавления новой оценки"
+            }
+        },
+        "stats": {
+            "title": "Статистика",
+            "description": "Статистика и аналитика"
+        }
     },
     "main": {
-      "avg_rating": "Ср. рейтинг",
-      "total_reviews": "Всего отзывов",
-      "active_stores": "Активные магазины",
-      "total_employees": "Всего сотрудников",
-      "last-7-days": "За последние 7 дней"
+        "hello": "Привет мир!"
     },
-    "breadcrumbs": {
-      "dashboard": "Дашборд",
-      "stores": "Магазины",
-      "employees": "Сотрудники",
-      "reviews": "Оценки",
-      "new": "Добавить",
-      "stats": "Статистика"
-    },
-    "user-nav": {
-      "profile": "Профиль",
-      "logout": "Выйти",
-      "role": "Админ"
-    },
-    "stores": {
-      "title": "Магазины",
-      "description": "Список всех магазинов",
-      "search": "Поиск магазинов...",
-      "table": {
-        "name": "Название",
-        "rating": "Рейтинг",
-        "reviews": "Отзывы",
-        "actions": "Действия",
-        "view": "Просмотреть",
-        "edit": "Редактировать"
-      },
-      "analytics": {
-        "avg_rating": "Ср. рейтинг",
-        "total_reviews": "Всего отзывов",
-        "top_store": "Лучший магазин",
-        "last_30_days": "За последние 30 дней"
-      }
-    },
-    "employees": {
-      "title": "Сотрудники",
-      "description": "Список всех сотрудников",
-      "search": "Поиск сотрудников...",
-      "table": {
-        "name": "Имя",
-        "role": "Роль",
-        "rating": "Рейтинг",
-        "reviews": "Отзывы",
-        "actions": "Действия",
-        "view": "Просмотреть"
-      },
-      "analytics": {
-        "avg_rating": "Ср. рейтинг",
-        "total_reviews": "Всего отзывов",
-        "top_employee": "Лучший сотрудник",
-        "last_30_days": "За последние 30 дней"
-      }
-    },
-    "reviews": {
-      "title": "Оценки",
-      "description": "Все оценки сотрудников",
-      "new": {
-        "title": "Добавить оценку",
-        "description": "Форма добавления новой оценки"
-      }
-    },
-    "stats": {
-      "title": "Статистика",
-      "description": "Статистика и аналитика"
+    "auth": {
+        "sign-in": {
+            "title": "Вход",
+            "description": "С возвращением",
+            "sign-up-link": "Нет аккаунта?",
+            "sign-up-text": "Зарегистрироваться"
+        },
+        "sign-up": {
+            "title": "Регистрация",
+            "description": "Создайте свой аккаунт",
+            "sign-in-link": "Уже есть аккаунт?",
+            "sign-in-text": "Войти"
+        },
+        "create-company": {
+            "title": "Создать компанию",
+            "welcome": "Добро пожаловать!",
+            "description": "Для начала работы, пожалуйста, создайте профиль вашей компании."
+        }
     }
-  },
-  "main": {
-    "hello": "Привет мир!"
-  }
 }

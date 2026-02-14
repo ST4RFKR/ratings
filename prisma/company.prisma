@@ -1,0 +1,20 @@
+model Company {
+  id   String @id @default(uuid())
+  name String
+
+  address String
+  rating  Float
+
+  description String
+  industry    String
+
+  stores Store[]
+
+  owner   User?   @relation(fields: [ownerId], references: [id])
+  ownerId String? @map("owner_id")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("company")
+}
