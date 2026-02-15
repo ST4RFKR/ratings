@@ -4,10 +4,29 @@ model User {
   email    String @unique
   password String
 
-  company Company[]
+  role     UserRole  @default(USER)
+
+ ownedCompanies Company[] @relation("CompanyOwner")
+
+
+  activeCompanyId String?  @map("active_company_id")
+  activeCompany   Company? @relation("ActiveCompany", fields: [activeCompanyId], references: [id], onDelete: SetNull)
+
+  verified DateTime? @default(now())
+
+  provider   String?
+  providerId String? @map("provider_id")
+
+  verificationCode VerificationCode? 
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
   @@map("user")
+}
+
+enum UserRole {
+    USER
+    MANAGER
+    ADMIN
 }

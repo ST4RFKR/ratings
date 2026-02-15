@@ -49,7 +49,12 @@
         "user-nav": {
             "profile": "Профіль",
             "logout": "Вийти",
-            "role": "Адмін"
+            "role": "Адмін",
+            "email-placeholder": "Немає email",
+            "confirm-logout-title": "Вийти?",
+            "confirm-logout-description": "Ви впевнені, що хочете завершити сесію?",
+            "confirm-logout-cancel": "Скасувати",
+            "confirm-logout-action": "Вийти"
         },
         "stores": {
             "title": "Магазини",
@@ -122,6 +127,16 @@
             "title": "Створити компанію",
             "welcome": "Ласкаво просимо!",
             "description": "Для початку роботи, будь ласка, створіть профіль вашої компанії."
+        },
+        "companies": {
+            "title": "Доступні компанії",
+            "subtitle": "Оберіть компанію, з якою хочете працювати.",
+            "no-description": "Опис ще не вказано.",
+            "no-address": "Адресу не вказано.",
+            "open": "Відкрити",
+            "select": "Обрати",
+            "loading": "Завантажуємо компанії...",
+            "loading-subtitle": "Будь ласка, зачекайте."
         }
     }
 }

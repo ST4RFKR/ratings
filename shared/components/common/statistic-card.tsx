@@ -1,10 +1,8 @@
 'use client';
-import { Badge } from '@/shared/components/ui/badge';
-import { Card, CardContent } from '@/shared/components/ui/card';
-import { cn } from '@/shared/lib/utils';
+import { Badge, Card, CardContent, Separator } from '@/shared/components/ui';
+import { cn } from '@/shared/lib';
 import { MessageSquare, Star, Store, TrendingUp, Users } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { Separator } from '../ui/separator';
 
 export const StatisticsCard = () => {
   const t = useTranslations('dashboard.main');

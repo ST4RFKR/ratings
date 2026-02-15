@@ -5,13 +5,13 @@ import { usePathname } from 'next/navigation';
 import * as React from 'react';
 
 import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from '@/shared/components/ui/breadcrumb';
+    Breadcrumb,
+    BreadcrumbItem,
+    BreadcrumbLink,
+    BreadcrumbList,
+    BreadcrumbPage,
+    BreadcrumbSeparator,
+} from '@/shared/components/ui';
 
 export function DashboardBreadcrumbs() {
   const pathname = usePathname();

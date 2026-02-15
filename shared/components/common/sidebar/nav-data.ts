@@ -1,5 +1,5 @@
 'use client';
-import { ROUTES } from '@/shared/config/routes';
+import { ROUTES } from '@/shared/config';
 import { BarChart3, LayoutDashboard, PlusCircle, Star, Store, Users } from 'lucide-react';
 
 export const sidebarNav = [

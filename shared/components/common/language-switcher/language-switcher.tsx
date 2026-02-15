@@ -3,9 +3,8 @@ import { setLocaleInCookie } from '@/shared/lib/server/set-locale-in-cookie';
 import { Globe } from 'lucide-react';
 import { Locale, useLocale, useTranslations } from 'next-intl';
 
-import { cn } from '@/shared/lib/utils';
-import { Button } from '../../ui/button';
-import { Popover, PopoverContent, PopoverTrigger } from '../../ui/popover';
+import { Button, Popover, PopoverContent, PopoverTrigger } from '@/shared/components/ui';
+import { cn } from '@/shared/lib';
 import { Flags } from './flags';
 
 export function LanguageSwitcher() {

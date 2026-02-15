@@ -1,9 +1,6 @@
-import { Button } from '@/shared/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/components/ui/card';
-import { Field, FieldDescription, FieldGroup, FieldLabel } from '@/shared/components/ui/field';
-import { Input } from '@/shared/components/ui/input';
-import { ROUTES } from '@/shared/config/routes';
-import { cn } from '@/shared/lib/utils';
+import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Field, FieldDescription, FieldGroup, FieldLabel, Input } from '@/shared/components/ui';
+import { ROUTES } from '@/shared/config';
+import { cn } from '@/shared/lib';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 

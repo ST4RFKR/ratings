@@ -3,14 +3,14 @@
 import * as React from 'react';
 
 import {
-  Sidebar,
-  SidebarContent,
-  SidebarFooter,
-  SidebarHeader,
-  SidebarMenu,
-  SidebarMenuItem,
-  SidebarRail,
-} from '@/shared/components/ui/sidebar';
+    Sidebar,
+    SidebarContent,
+    SidebarFooter,
+    SidebarHeader,
+    SidebarMenu,
+    SidebarMenuItem,
+    SidebarRail,
+} from '@/shared/components/ui';
 import { sidebarNav } from './nav-data';
 import { SidebarBrand } from './sidebar-brand';
 import { SidebarList } from './sidebar-list';

@@ -18,10 +18,13 @@ import { useForm } from 'react-hook-form';
 import { useTranslations } from 'next-intl';
 import { CreateCompanyFormValues, createCompanySchema } from '../model/create-company-schema';
 
+import { useSession } from 'next-auth/react';
 import { useCreateCompany } from '../model/use-create-company';
 
 export const CreateCompanyForm = () => {
   const t = useTranslations('auth');
+  const session = useSession();
+  console.log(session);
   const { mutate: createCompany, isPending } = useCreateCompany();
   const form = useForm<CreateCompanyFormValues>({
     resolver: zodResolver(createCompanySchema),

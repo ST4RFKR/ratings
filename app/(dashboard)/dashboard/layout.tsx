@@ -1,12 +1,38 @@
+import prisma from '@/prisma/prisma-client';
+import { nextAuthOptions } from '@/shared/auth/next-auth-options';
 import { LanguageSwitcher } from '@/shared/components/common/language-switcher/language-switcher';
 import { ModeToggle } from '@/shared/components/common/mode-toggle';
 import { AppSidebar } from '@/shared/components/common/sidebar/app-sidebar';
 import { DashboardBreadcrumbs } from '@/shared/components/common/sidebar/dashboard-breadcrumbs';
 import { UserNav } from '@/shared/components/common/sidebar/user-nav';
+import { Badge } from '@/shared/components/ui';
 import { Separator } from '@/shared/components/ui/separator';
 import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/shared/components/ui/sidebar';
+import { ROUTES } from '@/shared/config/routes';
+import { getServerSession } from 'next-auth/next';
+import { redirect } from 'next/navigation';
 
-export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
+  const session = await getServerSession(nextAuthOptions);
+
+  if (!session?.user) {
+    redirect(ROUTES.LOGIN);
+  }
+
+  const user = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    select: {
+      activeCompanyId: true,
+      activeCompany: { select: { name: true } },
+    },
+  });
+
+  if (!user?.activeCompanyId) {
+    redirect(ROUTES.COMPANY);
+  }
+
+  const activeCompanyName = user.activeCompany?.name ?? '';
+
   return (
     <>
       {
@@ -22,6 +48,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 />
                 <DashboardBreadcrumbs />
               </div>
+              {activeCompanyName && (
+                <div>
+                  <Badge variant={'outline'}>
+                    <span className='text-sm font-medium text-muted-foreground'>{activeCompanyName}</span>
+                  </Badge>
+                </div>
+              )}
               <div className='flex items-center gap-2'>
                 <ModeToggle />
                 <LanguageSwitcher />

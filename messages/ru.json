@@ -49,7 +49,12 @@
         "user-nav": {
             "profile": "Профиль",
             "logout": "Выйти",
-            "role": "Админ"
+            "role": "Админ",
+            "email-placeholder": "Нет email",
+            "confirm-logout-title": "Выйти?",
+            "confirm-logout-description": "Вы уверены, что хотите завершить сессию?",
+            "confirm-logout-cancel": "Отмена",
+            "confirm-logout-action": "Выйти"
         },
         "stores": {
             "title": "Магазины",
@@ -122,6 +127,16 @@
             "title": "Создать компанию",
             "welcome": "Добро пожаловать!",
             "description": "Для начала работы, пожалуйста, создайте профиль вашей компании."
+        },
+        "companies": {
+            "title": "Доступные компании",
+            "subtitle": "Выберите компанию, с которой хотите работать.",
+            "no-description": "Описание пока не указано.",
+            "no-address": "Адрес не указан.",
+            "open": "Открыть",
+            "select": "Выбрать",
+            "loading": "Загружаем компании...",
+            "loading-subtitle": "Пожалуйста, подождите."
         }
     }
 }

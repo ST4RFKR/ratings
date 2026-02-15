@@ -11,8 +11,11 @@ model Company {
 
   stores Store[]
 
-  owner   User?   @relation(fields: [ownerId], references: [id])
+  owner   User?   @relation("CompanyOwner", fields: [ownerId], references: [id], onDelete: Cascade)
   ownerId String? @map("owner_id")
+
+  activeForUsers User[] @relation("ActiveCompany")
+
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")

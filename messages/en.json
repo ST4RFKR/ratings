@@ -49,7 +49,12 @@
         "user-nav": {
             "profile": "Profile",
             "logout": "Log out",
-            "role": "Admin"
+            "role": "Admin",
+            "email-placeholder": "No email",
+            "confirm-logout-title": "Log out?",
+            "confirm-logout-description": "Are you sure you want to end the session?",
+            "confirm-logout-cancel": "Cancel",
+            "confirm-logout-action": "Log out"
         },
         "stores": {
             "title": "Stores",
@@ -122,6 +127,16 @@
             "title": "Create Company",
             "welcome": "Welcome!",
             "description": "To get started, please create your company profile first."
+        },
+        "companies": {
+            "title": "Available companies",
+            "subtitle": "Choose the company you want to work with.",
+            "no-description": "No description yet.",
+            "no-address": "No address specified.",
+            "open": "Open",
+            "select": "Select",
+            "loading": "Loading companies...",
+            "loading-subtitle": "Please wait a moment."
         }
     }
 }

@@ -1,7 +1,7 @@
 'use client';
 
-import { SidebarMenuButton } from '@/shared/components/ui/sidebar';
-import { ROUTES } from '@/shared/config/routes';
+import { SidebarMenuButton } from '@/shared/components/ui';
+import { ROUTES } from '@/shared/config';
 import { BarChart3 } from 'lucide-react';
 import Link from 'next/link';
 

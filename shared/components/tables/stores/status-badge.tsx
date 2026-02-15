@@ -1,4 +1,4 @@
-import { Badge } from '@/shared/components/ui/badge';
+import { Badge } from '@/shared/components/ui';
 import { CheckCircle2, XCircle } from 'lucide-react';
 
 export function StatusBadge({ status }: { status: 'active' | 'inactive' }) {

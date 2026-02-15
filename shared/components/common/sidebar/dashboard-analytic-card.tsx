@@ -1,7 +1,5 @@
-import { Badge } from '@/shared/components/ui/badge';
-import { Card, CardContent } from '@/shared/components/ui/card';
-import { Separator } from '@/shared/components/ui/separator';
-import { cn } from '@/shared/lib/utils';
+import { Badge, Card, CardContent, Separator } from '@/shared/components/ui';
+import { cn } from '@/shared/lib';
 
 type DashboardMetric = {
   label: string;

@@ -3,15 +3,8 @@
 import { Copy, ExternalLink, MoreHorizontal, Pencil, Trash } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
-import { ROUTES } from '@/shared/config/routes';
-
-import { Button } from '@/shared/components/ui/button';
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
-} from '@/shared/components/ui/dropdown-menu';
+import { Button, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/shared/components/ui';
+import { ROUTES } from '@/shared/config';
 
 interface ActionsDropdownProps {
     storeId: string;

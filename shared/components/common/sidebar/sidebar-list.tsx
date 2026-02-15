@@ -1,7 +1,7 @@
 'use client';
 
+import { SidebarGroup, SidebarMenu } from '@/shared/components/ui';
 import { type LucideIcon } from 'lucide-react';
-import { SidebarGroup, SidebarMenu } from '@/shared/components/ui/sidebar';
 import { SidebarItem } from './sidebar-item';
 
 type NavItem = {
