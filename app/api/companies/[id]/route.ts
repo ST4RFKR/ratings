@@ -3,7 +3,8 @@ import { nextAuthOptions } from '@/shared/auth/next-auth-options';
 import { getServerSession } from 'next-auth/next';
 import { NextRequest, NextResponse } from 'next/server';
 
-export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   try {
     const session = await getServerSession(nextAuthOptions);
 
@@ -11,7 +12,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
       return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
     }
 
-    const companyId = params.id;
+    const companyId = id;
     if (!companyId) {
       return NextResponse.json({ message: 'Company id is required' }, { status: 400 });
     }

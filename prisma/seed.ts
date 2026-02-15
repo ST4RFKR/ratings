@@ -2,7 +2,7 @@ import { faker } from '@faker-js/faker';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { hash } from 'argon2';
 import 'dotenv/config';
-import { PrismaClient, UserRole } from './generated/prisma/client';
+import { Prisma, PrismaClient, Store, UserRole } from './generated/prisma/client';
 
 const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL });
 
@@ -199,7 +199,7 @@ async function main() {
   // -----------------------
   // 4️⃣ Генерируем магазины для каждой компании
   // -----------------------
-  const storesData = [];
+  const storesData: Prisma.StoreCreateManyInput[] = [];
 
   // Распределение магазинов:
   const storesPerCompany = [5, 4, 6, 3, 3, 4, 2]; // Всего 27 магазинов

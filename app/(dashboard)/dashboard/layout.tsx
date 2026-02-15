@@ -16,7 +16,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
   const session = await getServerSession(nextAuthOptions);
 
   if (!session?.user) {
-    redirect(ROUTES.LOGIN);
+    redirect(ROUTES.NOT_AUTH);
   }
 
   const user = await prisma.user.findUnique({

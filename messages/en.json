@@ -110,6 +110,15 @@
     "main": {
         "hello": "Hello world!"
     },
+    "landing": {
+        "hero": {
+            "titlePrefix": "Build and manage your",
+            "titleHighlight": "company rating workflow",
+            "description": "Create your company, manage stores and employees, collect reviews, and track performance in one dashboard.",
+            "cta": "Start now",
+            "socialProof": "Used by teams and managers"
+        }
+    },
     "auth": {
         "sign-in": {
             "title": "Sign In",

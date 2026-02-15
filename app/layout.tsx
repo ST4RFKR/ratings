@@ -25,11 +25,7 @@ export const metadata: Metadata = {
 };
 
 import { Providers } from '@/shared/components/common';
-import { getUserSession } from '@/shared/lib/server/get-user-session';
 import { NextIntlClientProvider } from 'next-intl';
-
-const session = await getUserSession();
-console.log(session);
 
 export default function RootLayout({
   children,
