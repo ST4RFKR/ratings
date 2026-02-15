@@ -1,5 +1,6 @@
 'use client';
 
+import { LoginFormValues, loginSchema } from '@/features/auth/model/login.schema';
 import {
   Button,
   Card,
@@ -24,14 +25,6 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
-import { z } from 'zod';
-
-const loginSchema = z.object({
-  email: z.string().email({ message: 'Invalid email' }),
-  password: z.string().min(1, { message: 'Password is required' }),
-});
-
-type LoginFormValues = z.infer<typeof loginSchema>;
 
 export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) {
   const t = useTranslations('auth');
