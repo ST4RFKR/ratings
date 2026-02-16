@@ -1,5 +1,6 @@
 import prisma from '@/prisma/prisma-client';
 import { nextAuthOptions } from '@/shared/auth/next-auth-options';
+import { ApiErrors } from '@/shared/lib/server/api-error';
 import { generateJoinCode } from '@/shared/lib/server/generate-join-code';
 import { getUserSession } from '@/shared/lib/server/get-user-session';
 import { getServerSession } from 'next-auth/next';
@@ -30,14 +31,14 @@ export async function POST(req: NextRequest) {
     const session = await getServerSession(nextAuthOptions);
 
     if (!session || !session.user) {
-      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+      return ApiErrors.unauthorized('Unauthorized');
     }
 
     const body = await req.json();
     const { name, industry, address, description } = body;
 
     if (!name || !industry) {
-      return NextResponse.json({ message: 'Name and industry are required' }, { status: 400 });
+      return ApiErrors.badRequest('Name and industry are required');
     }
 
     const existingCompany = await prisma.company.findFirst({
@@ -48,7 +49,7 @@ export async function POST(req: NextRequest) {
     });
 
     if (existingCompany) {
-      return NextResponse.json({ message: 'Company already exists' }, { status: 409 });
+      return ApiErrors.conflict('Company with this name already exists');
     }
 
     const company = await prisma.company.create({
@@ -62,10 +63,9 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    await prisma.user.updateMany({
+    await prisma.user.update({
       where: {
         id: session.user.id,
-        activeCompanyId: null,
       },
       data: {
         activeCompanyId: company.id,
@@ -75,6 +75,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(company, { status: 201 });
   } catch (error) {
     console.error('Error creating company:', error);
-    return NextResponse.json({ message: 'Internal server error' }, { status: 500 });
+    return ApiErrors.internal('Failed to create company');
   }
 }

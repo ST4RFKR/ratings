@@ -1,5 +1,6 @@
 import prisma from '@/prisma/prisma-client';
 import { nextAuthOptions } from '@/shared/auth/next-auth-options';
+import { ApiErrors } from '@/shared/lib/server/api-error';
 import { getServerSession } from 'next-auth/next';
 import { NextRequest, NextResponse } from 'next/server';
 
@@ -9,12 +10,12 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     const session = await getServerSession(nextAuthOptions);
 
     if (!session || !session.user) {
-      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+      return ApiErrors.unauthorized('Unauthorized');
     }
 
     const companyId = id;
     if (!companyId) {
-      return NextResponse.json({ message: 'Company id is required' }, { status: 400 });
+      return ApiErrors.badRequest('companyId is required');
     }
 
     const body = await req.json();
@@ -28,7 +29,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     });
 
     if (!company) {
-      return NextResponse.json({ message: 'Company not found' }, { status: 404 });
+      return ApiErrors.notFound('Company not found');
     }
 
     const updatedCompany = await prisma.company.update({
@@ -44,6 +45,6 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     return NextResponse.json(updatedCompany, { status: 200 });
   } catch (error) {
     console.error('Error updating company:', error);
-    return NextResponse.json({ message: 'Internal server error' }, { status: 500 });
+    return ApiErrors.internal('Internal server error');
   }
 }

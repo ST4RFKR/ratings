@@ -1,5 +1,6 @@
 import { EmployeeRole, EmployeeStatus } from '@/prisma/generated/prisma/enums';
 import prisma from '@/prisma/prisma-client';
+import { ApiErrors } from '@/shared/lib/server/api-error';
 import { getUserSession } from '@/shared/lib/server/get-user-session';
 import { NextRequest, NextResponse } from 'next/server';
 
@@ -7,12 +8,12 @@ export async function POST(req: NextRequest) {
   try {
     const user = await getUserSession();
     if (!user?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return ApiErrors.unauthorized('Unauthorized');
     }
 
     const { companyId, locationId } = await req.json();
     if (!companyId || !locationId) {
-      return NextResponse.json({ error: 'companyId and locationId required' }, { status: 400 });
+      return ApiErrors.badRequest('companyId and locationId required');
     }
 
     const existingEmployee = await prisma.employee.findFirst({
@@ -20,7 +21,7 @@ export async function POST(req: NextRequest) {
     });
 
     if (existingEmployee) {
-      return NextResponse.json({ message: 'Already joined' }, { status: 200 });
+      return ApiErrors.conflict('You are already a member of this company');
     }
 
     await prisma.employee.create({
@@ -42,6 +43,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ message: 'Joined company and selected location. Pending approval.' });
   } catch (error) {
     console.error('Error joining company:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return ApiErrors.internal('Failed to join company');
   }
 }
