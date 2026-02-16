@@ -67,7 +67,7 @@ function HeroSection({ avatarList }: HeroSectionProps) {
                   asChild
                   className='group relative h-12 w-fit overflow-hidden rounded-full p-1 pe-14 ps-6 text-sm font-medium transition-all duration-500 hover:pe-6 hover:ps-14'
                 >
-                  <Link href={ROUTES.COMPANY}>
+                  <Link href={ROUTES.ONBOARDING}>
                     <span className='relative z-10 transition-all duration-500'>{t('cta')}</span>
                     <div className='absolute right-1 flex h-10 w-10 items-center justify-center rounded-full bg-background text-foreground transition-all duration-500 group-hover:right-[calc(100%-44px)] group-hover:rotate-45'>
                       <ArrowUpRight size={16} />

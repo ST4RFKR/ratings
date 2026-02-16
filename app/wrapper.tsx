@@ -21,7 +21,7 @@ export function Wrapper() {
           asChild
           className='min-w-56'
         >
-          <Link href={ROUTES.COMPANY}>CREATE COMPANY (TEST)</Link>
+          <Link href={ROUTES.ONBOARDING}>OPEN ONBOARDING (TEST)</Link>
         </Button>
       </div>
     </div>

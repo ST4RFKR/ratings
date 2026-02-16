@@ -12,8 +12,8 @@ import {
   FieldDescription,
   FieldGroup,
   FieldLabel,
-  FieldSeparator,
   Input,
+  Separator,
 } from '@/shared/components/ui';
 import { ROUTES } from '@/shared/config';
 import { cn } from '@/shared/lib';
@@ -58,8 +58,8 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
       }
 
       toast.success('Login successful');
-      router.push(ROUTES.COMPANY);
-    } catch (error) {
+      router.push(ROUTES.ONBOARDING);
+    } catch {
       toast.error('Something went wrong');
     } finally {
       setLoading(false);
@@ -67,7 +67,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
   };
 
   const handleGoogleLogin = async () => {
-    await signIn('google', { callbackUrl: ROUTES.COMPANY });
+    await signIn('google', { callbackUrl: ROUTES.ONBOARDING });
   };
 
   return (
@@ -102,9 +102,11 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
                   Login with Google
                 </Button>
               </Field>
-              <FieldSeparator className='*:data-[slot=field-separator-content]:bg-card'>
-                Or continue with
-              </FieldSeparator>
+              <div className='relative flex items-center justify-center overflow-hidden'>
+                <Separator />
+                <div className='mx-1 rounded-full border bg-muted px-2 py-1 text-center text-xs'>OR</div>
+                <Separator />
+              </div>
               <Field>
                 <FieldLabel htmlFor='email'>Email</FieldLabel>
                 <Input

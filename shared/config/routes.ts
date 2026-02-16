@@ -3,7 +3,7 @@ export const ROUTES = {
   NOT_AUTH: '/not-auth',
   LOGIN: '/sign-in',
   SIGNUP: '/sign-up',
-  COMPANY: '/company',
+  ONBOARDING: '/onboarding',
   DASHBOARD: {
     HOME: '/dashboard',
     STATS: '/dashboard/stats',

@@ -28,7 +28,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
   });
 
   if (!user?.activeCompanyId) {
-    redirect(ROUTES.COMPANY);
+    redirect(ROUTES.ONBOARDING);
   }
 
   const activeCompanyName = user.activeCompany?.name ?? '';

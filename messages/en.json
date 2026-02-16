@@ -137,6 +137,21 @@
             "welcome": "Welcome!",
             "description": "To get started, please create your company profile first."
         },
+        "onboarding": {
+            "tabs": {
+                "create-company": "Create company",
+                "join-company": "Join company"
+            },
+            "join": {
+                "title": "Join with company code",
+                "description": "Enter the 6-digit company code to submit your join request.",
+                "hint": "Ask your company admin for the invitation code.",
+                "submit": "Submit request",
+                "submitting": "Submitting...",
+                "success": "Request submitted successfully.",
+                "invalid-code": "Please enter a valid 6-digit code."
+            }
+        },
         "companies": {
             "title": "Available companies",
             "subtitle": "Choose the company you want to work with.",
