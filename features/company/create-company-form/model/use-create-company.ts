@@ -1,6 +1,7 @@
 import { ROUTES } from '@/shared/config/routes';
+import { getApiErrorMessage } from '@/shared/lib';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { AxiosError } from 'axios';
+import { Axios } from 'axios';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { createCompany } from '../api/create-company';
@@ -16,8 +17,8 @@ export const useCreateCompany = () => {
       toast.success('Company created successfully');
       router.push(ROUTES.DASHBOARD.HOME);
     },
-    onError: (error: any) => {
-      toast.error(error.response?.data?.message || 'Failed to create company');
+    onError: (error: Axios) => {
+      toast.error(getApiErrorMessage(error) || 'Failed to create company');
     },
   });
 };
