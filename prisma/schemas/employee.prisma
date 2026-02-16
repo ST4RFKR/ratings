@@ -8,8 +8,8 @@ model Employee {
   companyId String
   company   Company @relation(fields: [companyId], references: [id])
 
-  locationId String?
-  location   Location? @relation(fields: [locationId], references: [id])
+  locationId String
+  location   Location @relation(fields: [locationId], references: [id])
 
   role   EmployeeRole
   status EmployeeStatus
