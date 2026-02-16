@@ -1,0 +1,40 @@
+model Employee {
+  id       String @id @default(uuid())
+  fullName String
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  companyId String
+  company   Company @relation(fields: [companyId], references: [id])
+
+  locationId String?
+  location   Location? @relation(fields: [locationId], references: [id])
+
+  role   EmployeeRole
+  status EmployeeStatus
+
+  rating  Float    @default(0)
+  reviews Review[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@unique([userId, companyId])
+}
+
+enum EmployeeRole {
+  SUPERVISOR // старший смены
+  REVIEWER // оценивает сотрудников
+  CASHIER // кассир
+  SALES // продавец
+  WAITER // официант
+  COOK // повар
+  STAFF // общий персонал
+}
+
+enum EmployeeStatus {
+  PENDING
+  ACTIVE
+  BLOCKED
+}

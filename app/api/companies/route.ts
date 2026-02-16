@@ -1,5 +1,6 @@
 import prisma from '@/prisma/prisma-client';
 import { nextAuthOptions } from '@/shared/auth/next-auth-options';
+import { generateJoinCode } from '@/shared/lib/server/generate-join-code';
 import { getUserSession } from '@/shared/lib/server/get-user-session';
 import { getServerSession } from 'next-auth/next';
 import { NextRequest, NextResponse } from 'next/server';
@@ -57,6 +58,7 @@ export async function POST(req: NextRequest) {
         address,
         description,
         ownerId: session.user.id,
+        joinCode: generateJoinCode(),
       },
     });
 

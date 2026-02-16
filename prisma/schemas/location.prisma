@@ -1,13 +1,11 @@
-model Store {
+model Location {
   id   String @id @default(uuid())
   name String
 
   email   String?
   address String?
 
-  rating         Float @default(0.0)
-  employeesCount Int   @default(0) @map("employees_count")
-  totalReview    Int   @default(0) @map("total_review")
+  rating Float @default(0)
 
   description String?
   industry    String
@@ -15,8 +13,11 @@ model Store {
   company   Company @relation(fields: [companyId], references: [id])
   companyId String  @map("company_id")
 
+  employees Employee[]
+  reviews   Review[]
+
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  @@map("store")
+  @@map("location")
 }

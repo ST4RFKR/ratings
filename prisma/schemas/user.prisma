@@ -4,20 +4,20 @@ model User {
   email    String @unique
   password String
 
-  role     UserRole  @default(USER)
+  role UserRole @default(USER)
 
- ownedCompanies Company[] @relation("CompanyOwner")
-
+  employeeProfiles Employee[]
+  ownedCompanies   Company[]  @relation("CompanyOwner")
 
   activeCompanyId String?  @map("active_company_id")
   activeCompany   Company? @relation("ActiveCompany", fields: [activeCompanyId], references: [id], onDelete: SetNull)
 
-  verified DateTime? @default(now())
+  verified DateTime? @default(now()) //TODO: ПЕРЕДЕЛАТЬ - добавить подтверждения через почту
 
   provider   String?
   providerId String? @map("provider_id")
 
-  verificationCode VerificationCode? 
+  verificationCode VerificationCode?
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -26,7 +26,7 @@ model User {
 }
 
 enum UserRole {
-    USER
-    MANAGER
-    ADMIN
+  USER
+  MANAGER
+  ADMIN
 }
