@@ -1,10 +1,11 @@
+'use client';
 import { SearchInput } from '@/shared/components/common/search-input';
 import { DashboardAnalyticCard } from '@/shared/components/common/sidebar/dashboard-analytic-card';
-import { Button } from '@/shared/components/ui/button';
-import { Card, CardContent } from '@/shared/components/ui/card';
+import { DataTable } from '@/shared/components/tables/data-table';
+import { columnsEmployees, mockEmployees } from '@/shared/components/tables/employees/columns';
+import { Button } from '@/shared/components/ui';
 import { Award, MessageSquare, Plus, Star, Users } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import Link from 'next/link';
 
 export default function EmployeesPage() {
   const t = useTranslations('dashboard.employees');
@@ -52,12 +53,6 @@ export default function EmployeesPage() {
     },
   ];
 
-  const employees = [
-    { id: '1', name: 'John Doe', role: 'Senior Manager', rating: 4.98, reviews: 120 },
-    { id: '2', name: 'Jane Smith', role: 'Store Assistant', rating: 4.85, reviews: 85 },
-    { id: '3', name: 'Mike Johnson', role: 'Cashier', rating: 4.6, reviews: 60 },
-  ];
-
   return (
     <div className='flex flex-1 flex-col gap-4 p-4'>
       <div className='flex items-center justify-between gap-3'>
@@ -84,32 +79,12 @@ export default function EmployeesPage() {
         ))}
       </div>
 
-      <div className='mt-6 grid gap-4'>
-        {employees.map((employee) => (
-          <Card key={employee.id}>
-            <CardContent className='p-4 flex items-center justify-between'>
-              <div>
-                <h3 className='font-semibold'>{employee.name}</h3>
-                <p className='text-sm text-muted-foreground'>{employee.role}</p>
-              </div>
-              <div className='flex items-center gap-6'>
-                <div className='text-right'>
-                  <p className='text-sm font-medium'>{t('table.rating')}</p>
-                  <p className='text-sm text-muted-foreground'>{employee.rating}</p>
-                </div>
-                <div className='text-right'>
-                  <p className='text-sm font-medium'>{t('table.reviews')}</p>
-                  <p className='text-sm text-muted-foreground'>{employee.reviews}</p>
-                </div>
-                <Link href={`/dashboard/employees/${employee.id}`}>
-                  <Button variant='outline' size='sm'>
-                    {t('table.view')}
-                  </Button>
-                </Link>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
+      <div className='mt-6'>
+        <DataTable
+          columns={columnsEmployees}
+          data={mockEmployees}
+          filterPlaceholder='Filter employees...'
+        />
       </div>
     </div>
   );

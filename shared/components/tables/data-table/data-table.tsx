@@ -33,9 +33,16 @@ import { DataTablePagination } from './data-table-pagination';
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
+  filterColumnKey?: string;
+  filterPlaceholder?: string;
 }
 
-export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData, TValue>) {
+export function DataTable<TData, TValue>({
+  columns,
+  data,
+  filterColumnKey = 'name',
+  filterPlaceholder = 'Filter employees...',
+}: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
@@ -57,13 +64,15 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
     },
   });
 
+  const filterColumn = table.getColumn(filterColumnKey);
+
   return (
     <div>
       <div className='flex items-center py-4'>
         <Input
-          placeholder='Filter name...'
-          value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
-          onChange={(event) => table.getColumn('name')?.setFilterValue(event.target.value)}
+          placeholder={filterPlaceholder}
+          value={(filterColumn?.getFilterValue() as string) ?? ''}
+          onChange={(event) => filterColumn?.setFilterValue(event.target.value)}
           className='max-w-sm'
         />
         <DropdownMenu>
@@ -114,6 +123,7 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
               table.getRowModel().rows.map((row) => (
                 <TableRow
                   key={row.id}
+                  className='even:bg-muted/30'
                   data-state={row.getIsSelected() && 'selected'}
                 >
                   {row.getVisibleCells().map((cell) => (

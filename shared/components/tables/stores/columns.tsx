@@ -1,11 +1,11 @@
-'use client';
+﻿'use client';
 
 import { ColumnDef } from '@tanstack/react-table';
 import { GripVertical } from 'lucide-react';
 import { Checkbox } from '../../ui/checkbox';
 import { ActionsDropdown } from './actions-dropdown';
-import { DataTableColumnHeader } from './data-table-column-header';
-import { StatusBadge } from './status-badge';
+import { DataTableColumnHeader } from '@/shared/components/tables/data-table';
+import { StatusBadge } from '@/shared/components/tables/status-badge';
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
@@ -163,7 +163,7 @@ export const columnsStores: ColumnDef<Store>[] = [
     header: '',
     cell: () => (
       <button
-        onClick={() => alert('Drag & Drop feature in development 🚧')}
+        onClick={() => alert('Drag & Drop feature in development ')}
         className='cursor-grab active:cursor-grabbing'
       >
         <GripVertical className='h-4 w-4 text-muted-foreground' />

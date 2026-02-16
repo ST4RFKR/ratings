@@ -2,7 +2,7 @@ import { CreateStoreModal } from '@/features/store/create-store-modal';
 import { SearchInput } from '@/shared/components/common/search-input';
 import { DashboardAnalyticCard } from '@/shared/components/common/sidebar/dashboard-analytic-card';
 import { columnsStores, mockStores } from '@/shared/components/tables/stores/columns';
-import { DataTable } from '@/shared/components/tables/stores/data-table';
+import { DataTable } from '@/shared/components/tables/data-table';
 import { Button } from '@/shared/components/ui/button';
 import { Award, Plus, Star, Store, Users } from 'lucide-react';
 import { useTranslations } from 'next-intl';
