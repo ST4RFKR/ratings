@@ -1,8 +1,8 @@
-import { CreateStoreModal } from '@/features/store/create-store-modal';
+import { CreateLocationModal } from '@/features/location/create-location-modal';
 import { SearchInput } from '@/shared/components/common/search-input';
 import { DashboardAnalyticCard } from '@/shared/components/common/sidebar/dashboard-analytic-card';
-import { columnsStores, mockStores } from '@/shared/components/tables/stores/columns';
 import { DataTable } from '@/shared/components/tables/data-table';
+import { columnsStores } from '@/shared/components/tables/stores/columns';
 import { Button } from '@/shared/components/ui/button';
 import { Award, Plus, Star, Store, Users } from 'lucide-react';
 import { useTranslations } from 'next-intl';
@@ -53,6 +53,8 @@ export default function StoresPage() {
     },
   ];
 
+  // const { data: locations, isLoading } = useGetLocation();
+
   return (
     <div className='flex flex-1 flex-col gap-4 p-4'>
       <div className='flex items-center justify-between gap-3'>
@@ -62,12 +64,12 @@ export default function StoresPage() {
         </div>
         <div className='flex items-center gap-3'>
           <SearchInput placeholder={t('search')} />
-          <CreateStoreModal>
+          <CreateLocationModal>
             <Button>
               <Plus className='mr-1' />
               {'Add Store'}
             </Button>
-          </CreateStoreModal>
+          </CreateLocationModal>
         </div>
       </div>
       <p className='text-muted-foreground'>{t('description')}</p>
@@ -84,7 +86,7 @@ export default function StoresPage() {
       <div className='mt-6'>
         <DataTable
           columns={columnsStores}
-          data={mockStores}
+          data={[]}
         />
       </div>
     </div>

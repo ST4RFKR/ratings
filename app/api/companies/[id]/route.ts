@@ -1,3 +1,4 @@
+import { EmployeeRole } from '@/prisma/generated/prisma/enums';
 import prisma from '@/prisma/prisma-client';
 import { nextAuthOptions } from '@/shared/auth/next-auth-options';
 import { ApiErrors } from '@/shared/lib/server/api-error';
@@ -19,17 +20,29 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     }
 
     const body = await req.json();
-    const { name, industry, address, description } = body;
+    const { name, industry, address, description, status } = body;
 
-    const company = await prisma.company.findFirst({
+    const company = await prisma.company.findUnique({
       where: {
         id: companyId,
-        ownerId: session.user.id,
       },
     });
 
     if (!company) {
       return ApiErrors.notFound('Company not found');
+    }
+
+    const employee = await prisma.employee.findFirst({
+      where: {
+        companyId,
+        userId: session.user.id,
+        status: 'ACTIVE',
+        role: EmployeeRole.OWNER,
+      },
+    });
+
+    if (!employee) {
+      return ApiErrors.forbidden('Forbidden');
     }
 
     const updatedCompany = await prisma.company.update({
@@ -39,6 +52,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
         industry: industry ?? company.industry,
         address: address ?? company.address,
         description: description ?? company.description,
+        status: status ?? company.status,
       },
     });
 

@@ -1,11 +1,12 @@
 ﻿'use client';
 
+import { useGetLocation } from '@/features/location/get-location/model/use-get-location';
+import { DataTableColumnHeader } from '@/shared/components/tables/data-table';
+import { StatusBadge } from '@/shared/components/tables/status-badge';
 import { ColumnDef } from '@tanstack/react-table';
 import { GripVertical } from 'lucide-react';
 import { Checkbox } from '../../ui/checkbox';
 import { ActionsDropdown } from './actions-dropdown';
-import { DataTableColumnHeader } from '@/shared/components/tables/data-table';
-import { StatusBadge } from '@/shared/components/tables/status-badge';
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
@@ -212,10 +213,10 @@ export const columnsStores: ColumnDef<Store>[] = [
     accessorKey: 'email',
     header: 'Email',
   },
-  {
-    accessorKey: 'employeesCount',
-    header: 'Employees Count',
-  },
+  // {
+  //   accessorKey: 'employeesCount',
+  //   header: 'Employees Count',
+  // },
   {
     accessorKey: 'status',
     header: 'Status',

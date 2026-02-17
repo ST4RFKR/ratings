@@ -1,6 +1,7 @@
 model Employee {
   id       String @id @default(uuid())
   fullName String
+  slug     String
 
   userId String
   user   User   @relation(fields: [userId], references: [id])
@@ -8,8 +9,8 @@ model Employee {
   companyId String
   company   Company @relation(fields: [companyId], references: [id])
 
-  locationId String
-  location   Location @relation(fields: [locationId], references: [id])
+  locationId String?
+  location   Location? @relation(fields: [locationId], references: [id])
 
   role   EmployeeRole
   status EmployeeStatus
@@ -21,9 +22,14 @@ model Employee {
   updatedAt DateTime @updatedAt @map("updated_at")
 
   @@unique([userId, companyId])
+  @@unique([companyId, slug])
+  @@index([companyId, locationId, status])
+  @@index([userId, companyId, status, role])
 }
 
 enum EmployeeRole {
+  OWNER
+  MANAGER
   SUPERVISOR // старший смены
   REVIEWER // оценивает сотрудников
   CASHIER // кассир

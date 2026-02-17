@@ -2,6 +2,7 @@ import { EmployeeRole, EmployeeStatus } from '@/prisma/generated/prisma/enums';
 import prisma from '@/prisma/prisma-client';
 import { ApiErrors } from '@/shared/lib/server/api-error';
 import { getUserSession } from '@/shared/lib/server/get-user-session';
+import { slug } from '@/shared/lib/server/slugify';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(req: NextRequest) {
@@ -16,6 +17,18 @@ export async function POST(req: NextRequest) {
       return ApiErrors.badRequest('companyId and locationId required');
     }
 
+    const location = await prisma.location.findFirst({
+      where: {
+        id: locationId,
+        companyId,
+      },
+      select: { id: true },
+    });
+
+    if (!location) {
+      return ApiErrors.notFound('Location not found in selected company');
+    }
+
     const existingEmployee = await prisma.employee.findFirst({
       where: { userId: user.id, companyId },
     });
@@ -24,12 +37,15 @@ export async function POST(req: NextRequest) {
       return ApiErrors.conflict('You are already a member of this company');
     }
 
+    const fullName = user.name || `Employee ${user.id.slice(0, 8)}`;
+
     await prisma.employee.create({
       data: {
         userId: user.id,
         companyId,
         locationId,
-        fullName: user.name,
+        fullName,
+        slug: slug(`${fullName}-${user.id.slice(0, 8)}`),
         status: EmployeeStatus.PENDING,
         role: EmployeeRole.STAFF,
       },

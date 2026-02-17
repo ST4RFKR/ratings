@@ -18,15 +18,17 @@ export async function PATCH(req: NextRequest) {
       return NextResponse.json({ message: 'companyId is required' }, { status: 400 });
     }
 
-    const company = await prisma.company.findFirst({
+    const employee = await prisma.employee.findFirst({
       where: {
-        id: companyId,
-        ownerId: session.user.id,
+        companyId,
+        userId: session.user.id,
+        status: 'ACTIVE',
       },
+      select: { companyId: true },
     });
 
-    if (!company) {
-      return NextResponse.json({ message: 'Company not found' }, { status: 404 });
+    if (!employee) {
+      return NextResponse.json({ message: 'Company not found or access denied' }, { status: 404 });
     }
 
     await prisma.user.update({
@@ -34,11 +36,11 @@ export async function PATCH(req: NextRequest) {
         id: session.user.id,
       },
       data: {
-        activeCompanyId: company.id,
+        activeCompanyId: employee.companyId,
       },
     });
 
-    return NextResponse.json({ ok: true, companyId: company.id }, { status: 200 });
+    return NextResponse.json({ ok: true, companyId: employee.companyId }, { status: 200 });
   } catch (error) {
     console.error('Error updating active company:', error);
     return NextResponse.json({ message: 'Internal server error' }, { status: 500 });

@@ -1,6 +1,7 @@
 model Location {
   id   String @id @default(uuid())
   name String
+  slug String
 
   email   String?
   address String?
@@ -8,16 +9,25 @@ model Location {
   rating Float @default(0)
 
   description String?
-  industry    String
+  industry    String?
 
   company   Company @relation(fields: [companyId], references: [id])
   companyId String  @map("company_id")
 
   employees Employee[]
   reviews   Review[]
+  status    LocationStatus @default(PENDING)
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
+  @@unique([companyId, slug])
+  @@index([companyId, status])
   @@map("location")
+}
+
+enum LocationStatus {
+  PENDING
+  ACTIVE
+  BLOCKED
 }
