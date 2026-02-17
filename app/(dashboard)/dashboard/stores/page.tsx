@@ -1,15 +1,39 @@
+'use client';
+
 import { CreateLocationModal } from '@/features/location/create-location-modal';
+import { useGetLocation } from '@/features/location/get-location/model/use-get-location';
 import { SearchInput } from '@/shared/components/common/search-input';
 import { DashboardAnalyticCard } from '@/shared/components/common/sidebar/dashboard-analytic-card';
 import { DataTable } from '@/shared/components/tables/data-table';
-import { columnsStores } from '@/shared/components/tables/stores/columns';
+import { columnsStores, type LocationTableRow } from '@/shared/components/tables/stores/columns';
 import { Button } from '@/shared/components/ui/button';
 import { Award, Plus, Star, Store, Users } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import { useMemo } from 'react';
+
+function mapLocationStatus(status: 'ACTIVE' | 'PENDING' | 'BLOCKED'): 'active' | 'inactive' {
+  if (status === 'ACTIVE') {
+    return 'active';
+  }
+
+  return 'inactive';
+}
 
 export default function StoresPage() {
   const t = useTranslations('dashboard.stores');
   const a = useTranslations('dashboard.stores.analytics');
+  const locationsQuery = useGetLocation();
+
+  const locations = useMemo<LocationTableRow[]>(() => {
+    return (locationsQuery.data ?? []).map((location) => ({
+      id: location.id,
+      slug: location.slug,
+      name: location.name,
+      rating: location.rating,
+      email: location.email,
+      status: mapLocationStatus(location.status),
+    }));
+  }, [locationsQuery.data]);
 
   const analyticsData = [
     {
@@ -53,8 +77,6 @@ export default function StoresPage() {
     },
   ];
 
-  // const { data: locations, isLoading } = useGetLocation();
-
   return (
     <div className='flex flex-1 flex-col gap-4 p-4'>
       <div className='flex items-center justify-between gap-3'>
@@ -86,7 +108,8 @@ export default function StoresPage() {
       <div className='mt-6'>
         <DataTable
           columns={columnsStores}
-          data={[]}
+          data={locations}
+          filterPlaceholder={t('search')}
         />
       </div>
     </div>

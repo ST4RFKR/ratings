@@ -1,7 +1,16 @@
 import { apiInstance } from '@/shared/api/api-instance';
 
-export function getLocation() {
-  const response = apiInstance.get('/locations');
+export interface LocationDto {
+  id: string;
+  slug: string;
+  name: string;
+  rating: number;
+  email: string | null;
+  status: 'ACTIVE' | 'PENDING' | 'BLOCKED';
+}
 
-  return response;
+export async function getLocation(): Promise<LocationDto[]> {
+  const response = await apiInstance.get<LocationDto[]>('/locations');
+
+  return response.data;
 }
