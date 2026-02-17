@@ -67,7 +67,7 @@ export default function StoresPage() {
           <CreateLocationModal>
             <Button>
               <Plus className='mr-1' />
-              {'Add Store'}
+              {t('actions.add_location')}
             </Button>
           </CreateLocationModal>
         </div>

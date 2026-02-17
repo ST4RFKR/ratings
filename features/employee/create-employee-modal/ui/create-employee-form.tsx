@@ -13,46 +13,41 @@ import {
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
 import { Controller, useForm } from 'react-hook-form';
-import { CreateLocationFormValues, createLocationSchema } from '../model/create-location-schema';
-import { useCreateLocation } from '../model/use-create-location';
+import { toast } from 'sonner';
+import { CreateEmployeeFormValues, createEmployeeSchema } from '../model/create-employee-schema';
 
-interface CreateLocationFormProps {
+interface CreateEmployeeFormProps {
   onSuccess?: () => void;
   onCancel?: () => void;
 }
 
-export function CreateLocationForm({ onSuccess, onCancel }: CreateLocationFormProps) {
-  const t = useTranslations('dashboard.forms.location');
-  const { mutate: createLocation, isPending } = useCreateLocation();
+export function CreateEmployeeForm({ onSuccess, onCancel }: CreateEmployeeFormProps) {
+  const t = useTranslations('dashboard.forms.employee');
 
-  const form = useForm<CreateLocationFormValues>({
-    resolver: zodResolver(createLocationSchema),
+  const form = useForm<CreateEmployeeFormValues>({
+    resolver: zodResolver(createEmployeeSchema),
     mode: 'onChange',
     defaultValues: {
-      name: '',
+      fullName: '',
       email: '',
-      address: '',
+      role: '',
+      location: '',
       description: '',
-      industry: '',
       isActive: true,
     },
   });
 
-  const onSubmit = (values: CreateLocationFormValues) => {
-    createLocation(values, {
-      onSuccess: () => {
-        form.reset();
-        onSuccess?.();
-      },
-    });
-
+  const onSubmit = (values: CreateEmployeeFormValues) => {
     console.log(values);
+    toast.success(t('messages.success'));
+    form.reset();
+    onSuccess?.();
   };
 
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = form;
 
   return (
@@ -62,14 +57,14 @@ export function CreateLocationForm({ onSuccess, onCancel }: CreateLocationFormPr
     >
       <FieldGroup className='gap-4 sm:gap-5'>
         <Field>
-          <FieldLabel htmlFor='name'>{t('fields.name.label')}</FieldLabel>
+          <FieldLabel htmlFor='fullName'>{t('fields.fullName.label')}</FieldLabel>
           <Input
-            id='name'
-            placeholder={t('fields.name.placeholder')}
-            disabled={isPending}
-            {...register('name')}
+            id='fullName'
+            placeholder={t('fields.fullName.placeholder')}
+            disabled={isSubmitting}
+            {...register('fullName')}
           />
-          {errors.name && <FieldDescription className='text-destructive'>{errors.name.message}</FieldDescription>}
+          {errors.fullName && <FieldDescription className='text-destructive'>{errors.fullName.message}</FieldDescription>}
         </Field>
 
         <Field>
@@ -78,34 +73,32 @@ export function CreateLocationForm({ onSuccess, onCancel }: CreateLocationFormPr
             id='email'
             type='email'
             placeholder={t('fields.email.placeholder')}
-            disabled={isPending}
+            disabled={isSubmitting}
             {...register('email')}
           />
           {errors.email && <FieldDescription className='text-destructive'>{errors.email.message}</FieldDescription>}
         </Field>
 
         <Field>
-          <FieldLabel htmlFor='address'>{t('fields.address.label')}</FieldLabel>
+          <FieldLabel htmlFor='role'>{t('fields.role.label')}</FieldLabel>
           <Input
-            id='address'
-            placeholder={t('fields.address.placeholder')}
-            disabled={isPending}
-            {...register('address')}
+            id='role'
+            placeholder={t('fields.role.placeholder')}
+            disabled={isSubmitting}
+            {...register('role')}
           />
-          {errors.address && <FieldDescription className='text-destructive'>{errors.address.message}</FieldDescription>}
+          {errors.role && <FieldDescription className='text-destructive'>{errors.role.message}</FieldDescription>}
         </Field>
 
         <Field>
-          <FieldLabel htmlFor='industry'>{t('fields.industry.label')}</FieldLabel>
+          <FieldLabel htmlFor='location'>{t('fields.location.label')}</FieldLabel>
           <Input
-            id='industry'
-            placeholder={t('fields.industry.placeholder')}
-            disabled={isPending}
-            {...register('industry')}
+            id='location'
+            placeholder={t('fields.location.placeholder')}
+            disabled={isSubmitting}
+            {...register('location')}
           />
-          {errors.industry && (
-            <FieldDescription className='text-destructive'>{errors.industry.message}</FieldDescription>
-          )}
+          {errors.location && <FieldDescription className='text-destructive'>{errors.location.message}</FieldDescription>}
         </Field>
 
         <Field>
@@ -114,7 +107,7 @@ export function CreateLocationForm({ onSuccess, onCancel }: CreateLocationFormPr
             id='description'
             placeholder={t('fields.description.placeholder')}
             className='resize-none'
-            disabled={isPending}
+            disabled={isSubmitting}
             {...register('description')}
           />
           {errors.description && (
@@ -134,7 +127,7 @@ export function CreateLocationForm({ onSuccess, onCancel }: CreateLocationFormPr
                 id='isActive'
                 checked={field.value}
                 onCheckedChange={(checked) => field.onChange(checked === true)}
-                disabled={isPending}
+                disabled={isSubmitting}
               />
               <div className='space-y-1'>
                 <FieldLabel htmlFor='isActive'>{t('fields.isActive.label')}</FieldLabel>
@@ -149,17 +142,17 @@ export function CreateLocationForm({ onSuccess, onCancel }: CreateLocationFormPr
             type='button'
             variant='outline'
             onClick={onCancel}
-            disabled={isPending}
+            disabled={isSubmitting}
             className='w-full sm:w-auto'
           >
             {t('actions.cancel')}
           </Button>
           <Button
             type='submit'
-            disabled={isPending}
+            disabled={isSubmitting}
             className='w-full sm:w-auto'
           >
-            {isPending ? t('actions.creating') : t('actions.create')}
+            {isSubmitting ? t('actions.creating') : t('actions.create')}
           </Button>
         </div>
       </FieldGroup>

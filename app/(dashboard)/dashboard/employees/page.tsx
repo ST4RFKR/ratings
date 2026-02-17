@@ -1,4 +1,5 @@
 'use client';
+import { CreateEmployeeModal } from '@/features/employee/create-employee-modal';
 import { SearchInput } from '@/shared/components/common/search-input';
 import { DashboardAnalyticCard } from '@/shared/components/common/sidebar/dashboard-analytic-card';
 import { DataTable } from '@/shared/components/tables/data-table';
@@ -62,10 +63,12 @@ export default function EmployeesPage() {
         </div>
         <div className='flex items-center gap-3'>
           <SearchInput placeholder={t('search')} />
-          <Button>
-            <Plus className='mr-1' />
-            {'Add Employee'}
-          </Button>
+          <CreateEmployeeModal>
+            <Button>
+              <Plus className='mr-1' />
+              {t('actions.add_employee')}
+            </Button>
+          </CreateEmployeeModal>
         </div>
       </div>
       <p className='text-muted-foreground'>{t('description')}</p>
@@ -83,7 +86,7 @@ export default function EmployeesPage() {
         <DataTable
           columns={columnsEmployees}
           data={mockEmployees}
-          filterPlaceholder='Filter employees...'
+          filterPlaceholder={t('filter')}
         />
       </div>
     </div>

@@ -62,6 +62,9 @@
       "title": "Магазины",
       "description": "Список всех магазинов",
       "search": "Поиск магазинов...",
+      "actions": {
+        "add_location": "Добавить локацию"
+      },
       "table": {
         "name": "Название",
         "rating": "Рейтинг",
@@ -81,6 +84,10 @@
       "title": "Сотрудники",
       "description": "Список всех сотрудников",
       "search": "Поиск сотрудников...",
+      "filter": "Фильтр сотрудников...",
+      "actions": {
+        "add_employee": "Добавить сотрудника"
+      },
       "table": {
         "name": "Имя",
         "role": "Роль",
@@ -107,6 +114,85 @@
     "stats": {
       "title": "Статистика",
       "description": "Статистика и аналитика"
+    },
+    "forms": {
+      "location": {
+        "modal": {
+          "title": "Создать новую локацию",
+          "description": "Заполните поля ниже, чтобы добавить новую локацию в дашборд."
+        },
+        "fields": {
+          "name": {
+            "label": "Название локации",
+            "placeholder": "Например: Downtown"
+          },
+          "email": {
+            "label": "Email",
+            "placeholder": "location@company.com"
+          },
+          "address": {
+            "label": "Адрес",
+            "placeholder": "Улица, дом, город"
+          },
+          "industry": {
+            "label": "Индустрия",
+            "placeholder": "Retail, Food, Services..."
+          },
+          "description": {
+            "label": "Описание",
+            "placeholder": "Краткое описание локации"
+          },
+          "isActive": {
+            "label": "Активная локация",
+            "description": "Сразу будет доступна сотрудникам после создания."
+          }
+        },
+        "actions": {
+          "cancel": "Отмена",
+          "create": "Создать",
+          "creating": "Создание..."
+        }
+      },
+      "employee": {
+        "modal": {
+          "title": "Добавить нового сотрудника",
+          "description": "Заполните данные сотрудника, чтобы добавить его в дашборд."
+        },
+        "fields": {
+          "fullName": {
+            "label": "Полное имя",
+            "placeholder": "Например: John Doe"
+          },
+          "email": {
+            "label": "Email",
+            "placeholder": "employee@company.com"
+          },
+          "role": {
+            "label": "Роль",
+            "placeholder": "Например: Shift Supervisor"
+          },
+          "location": {
+            "label": "Локация",
+            "placeholder": "Например: Downtown"
+          },
+          "description": {
+            "label": "Описание",
+            "placeholder": "Необязательная заметка об обязанностях сотрудника"
+          },
+          "isActive": {
+            "label": "Активный сотрудник",
+            "description": "Сотрудник сразу появится в активном списке."
+          }
+        },
+        "actions": {
+          "cancel": "Отмена",
+          "create": "Создать",
+          "creating": "Создание..."
+        },
+        "messages": {
+          "success": "Сотрудник успешно добавлен"
+        }
+      }
     }
   },
   "main": {

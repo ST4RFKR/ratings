@@ -62,6 +62,9 @@
       "title": "Stores",
       "description": "List of all stores",
       "search": "Search stores...",
+      "actions": {
+        "add_location": "Add Location"
+      },
       "table": {
         "name": "Name",
         "rating": "Rating",
@@ -81,6 +84,10 @@
       "title": "Employees",
       "description": "List of all employees",
       "search": "Search employees...",
+      "filter": "Filter employees...",
+      "actions": {
+        "add_employee": "Add Employee"
+      },
       "table": {
         "name": "Name",
         "role": "Role",
@@ -107,6 +114,85 @@
     "stats": {
       "title": "Statistics",
       "description": "Statistics and analytics"
+    },
+    "forms": {
+      "location": {
+        "modal": {
+          "title": "Create New Location",
+          "description": "Fill in the details below to add a new location to your dashboard."
+        },
+        "fields": {
+          "name": {
+            "label": "Location name",
+            "placeholder": "For example: Downtown"
+          },
+          "email": {
+            "label": "Email",
+            "placeholder": "location@company.com"
+          },
+          "address": {
+            "label": "Address",
+            "placeholder": "Street, building, city"
+          },
+          "industry": {
+            "label": "Industry",
+            "placeholder": "Retail, Food, Services..."
+          },
+          "description": {
+            "label": "Description",
+            "placeholder": "Brief location description"
+          },
+          "isActive": {
+            "label": "Active location",
+            "description": "Will be immediately available to employees after creation."
+          }
+        },
+        "actions": {
+          "cancel": "Cancel",
+          "create": "Create",
+          "creating": "Creating..."
+        }
+      },
+      "employee": {
+        "modal": {
+          "title": "Add New Employee",
+          "description": "Fill in employee details to add them to your dashboard."
+        },
+        "fields": {
+          "fullName": {
+            "label": "Full name",
+            "placeholder": "For example: John Doe"
+          },
+          "email": {
+            "label": "Email",
+            "placeholder": "employee@company.com"
+          },
+          "role": {
+            "label": "Role",
+            "placeholder": "For example: Shift Supervisor"
+          },
+          "location": {
+            "label": "Location",
+            "placeholder": "For example: Downtown"
+          },
+          "description": {
+            "label": "Description",
+            "placeholder": "Optional note about employee responsibilities"
+          },
+          "isActive": {
+            "label": "Active employee",
+            "description": "Employee will be visible in the active list right away."
+          }
+        },
+        "actions": {
+          "cancel": "Cancel",
+          "create": "Create",
+          "creating": "Creating..."
+        },
+        "messages": {
+          "success": "Employee added successfully"
+        }
+      }
     }
   },
   "main": {

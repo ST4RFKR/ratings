@@ -19,7 +19,7 @@ export type Employee = {
   id: string;
   name: string;
   role: string;
-  store: string;
+  location: string;
   rating: number;
   reviews: number;
   email: string;
@@ -31,7 +31,7 @@ export const mockEmployees: Employee[] = [
     id: '1',
     name: 'John Doe',
     role: 'Senior Manager',
-    store: 'Tech Market',
+    location: 'Tech Market',
     rating: 4.98,
     reviews: 120,
     email: 'john.doe@techmarket.com',
@@ -41,7 +41,7 @@ export const mockEmployees: Employee[] = [
     id: '2',
     name: 'Jane Smith',
     role: 'Store Assistant',
-    store: 'Fresh Food Shop',
+    location: 'Fresh Food Shop',
     rating: 4.85,
     reviews: 85,
     email: 'jane.smith@freshfood.com',
@@ -51,7 +51,7 @@ export const mockEmployees: Employee[] = [
     id: '3',
     name: 'Mike Johnson',
     role: 'Cashier',
-    store: 'Book World',
+    location: 'Book World',
     rating: 4.65,
     reviews: 60,
     email: 'mike.johnson@bookworld.com',
@@ -61,7 +61,7 @@ export const mockEmployees: Employee[] = [
     id: '4',
     name: 'Sara Patel',
     role: 'Customer Experience Lead',
-    store: 'Green Garden',
+    location: 'Green Garden',
     rating: 4.92,
     reviews: 102,
     email: 'sara.patel@greengarden.com',
@@ -71,7 +71,7 @@ export const mockEmployees: Employee[] = [
     id: '5',
     name: 'Carlos Vega',
     role: 'Shift Supervisor',
-    store: 'Gadget Hub',
+    location: 'Gadget Hub',
     rating: 4.73,
     reviews: 75,
     email: 'carlos.vega@gadgethub.com',
@@ -81,7 +81,7 @@ export const mockEmployees: Employee[] = [
     id: '6',
     name: 'Emily Carter',
     role: 'Visual Merchandiser',
-    store: 'Fashion Store',
+    location: 'Fashion Store',
     rating: 4.46,
     reviews: 54,
     email: 'emily.carter@fashionstore.com',
@@ -91,7 +91,7 @@ export const mockEmployees: Employee[] = [
     id: '7',
     name: 'Dmitry Ivanov',
     role: 'Warehouse Coordinator',
-    store: 'Home Essentials',
+    location: 'Home Essentials',
     rating: 4.31,
     reviews: 48,
     email: 'dmitry.ivanov@homeessentials.com',
@@ -101,7 +101,7 @@ export const mockEmployees: Employee[] = [
     id: '8',
     name: 'Priya Kumar',
     role: 'Inventory Analyst',
-    store: 'Sport Center',
+    location: 'Sport Center',
     rating: 4.67,
     reviews: 69,
     email: 'priya.kumar@sportcenter.com',
@@ -111,7 +111,7 @@ export const mockEmployees: Employee[] = [
     id: '9',
     name: "Liam O'Connor",
     role: 'Barista',
-    store: 'Coffee Point',
+    location: 'Coffee Point',
     rating: 4.88,
     reviews: 118,
     email: 'liam.oconnor@coffeepoint.com',
@@ -121,7 +121,7 @@ export const mockEmployees: Employee[] = [
     id: '10',
     name: 'Nora Lee',
     role: 'Assistant Store Manager',
-    store: 'Pet Paradise',
+    location: 'Pet Paradise',
     rating: 4.55,
     reviews: 66,
     email: 'nora.lee@petparadise.com',
@@ -180,11 +180,11 @@ export const columnsEmployees: ColumnDef<Employee>[] = [
     ),
   },
   {
-    accessorKey: 'store',
+    accessorKey: 'location',
     header: ({ column }) => (
       <DataTableColumnHeader
         column={column}
-        title='Store'
+        title='Location'
       />
     ),
   },

@@ -10,14 +10,14 @@ import {
 } from '@/shared/components/ui/dialog';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
-import { CreateLocationForm } from './create-location-form';
+import { CreateEmployeeForm } from './create-employee-form';
 
-interface CreateLocationModalProps {
+interface CreateEmployeeModalProps {
   children?: React.ReactNode;
 }
 
-export const CreateLocationModal = ({ children }: CreateLocationModalProps) => {
-  const t = useTranslations('dashboard.forms.location.modal');
+export const CreateEmployeeModal = ({ children }: CreateEmployeeModalProps) => {
+  const t = useTranslations('dashboard.forms.employee.modal');
   const [open, setOpen] = useState(false);
 
   const handleSuccess = () => {
@@ -35,7 +35,7 @@ export const CreateLocationModal = ({ children }: CreateLocationModalProps) => {
           <DialogTitle>{t('title')}</DialogTitle>
           <DialogDescription>{t('description')}</DialogDescription>
         </DialogHeader>
-        <CreateLocationForm
+        <CreateEmployeeForm
           onSuccess={handleSuccess}
           onCancel={() => setOpen(false)}
         />

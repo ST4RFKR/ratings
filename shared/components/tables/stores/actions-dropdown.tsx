@@ -38,7 +38,7 @@ export function ActionsDropdown({ storeId, onDelete, onEdit }: ActionsDropdownPr
 
                 <DropdownMenuItem onClick={() => router.push(ROUTES.DASHBOARD.STORE_DETAILS(storeId))}>
                     <ExternalLink className='mr-2 h-4 w-4' />
-                    View store
+                    View location
                 </DropdownMenuItem>
 
                 <DropdownMenuItem onClick={() => onEdit?.(storeId)}>
