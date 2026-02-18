@@ -13,6 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/shared/components/ui';
+import { useGetLocation } from '@/features/location/get-location/model/use-get-location';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
 import { Controller, useForm } from 'react-hook-form';
@@ -32,6 +33,9 @@ interface CreateEmployeeFormProps {
 export function CreateEmployeeForm({ onSuccess, onCancel }: CreateEmployeeFormProps) {
   const t = useTranslations('dashboard.forms.employee');
   const { mutate: createEmployee, isPending } = useCreateEmployee();
+  const locationsQuery = useGetLocation();
+  const locations = (locationsQuery.data ?? []).filter((location) => location.status === 'ACTIVE');
+  const hasAvailableLocations = locations.length > 0;
 
   const form = useForm<CreateEmployeeFormValues>({
     resolver: zodResolver(createEmployeeSchema),
@@ -40,6 +44,7 @@ export function CreateEmployeeForm({ onSuccess, onCancel }: CreateEmployeeFormPr
       fullName: '',
       email: '',
       password: '',
+      locationId: '',
       role: 'STAFF',
       status: 'ACTIVE',
     },
@@ -102,6 +107,45 @@ export function CreateEmployeeForm({ onSuccess, onCancel }: CreateEmployeeFormPr
           />
           {errors.password && (
             <FieldDescription className='text-destructive'>{errors.password.message}</FieldDescription>
+          )}
+        </Field>
+
+        <Field>
+          <FieldLabel htmlFor='locationId'>{t('fields.location.label')}</FieldLabel>
+          <Controller
+            control={form.control}
+            name='locationId'
+            render={({ field }) => (
+              <Select
+                value={field.value}
+                onValueChange={field.onChange}
+                disabled={isPending || locationsQuery.isLoading || !hasAvailableLocations}
+              >
+                <SelectTrigger
+                  id='locationId'
+                  className='w-full'
+                >
+                  <SelectValue placeholder={t('fields.location.placeholder')} />
+                </SelectTrigger>
+                <SelectContent>
+                  {locations.map((location) => (
+                    <SelectItem
+                      key={location.id}
+                      value={location.id}
+                    >
+                      {location.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
+          />
+          {locationsQuery.isLoading && <FieldDescription>{t('fields.location.loading')}</FieldDescription>}
+          {!locationsQuery.isLoading && !hasAvailableLocations && (
+            <FieldDescription className='text-destructive'>{t('fields.location.empty')}</FieldDescription>
+          )}
+          {errors.locationId && (
+            <FieldDescription className='text-destructive'>{errors.locationId.message}</FieldDescription>
           )}
         </Field>
 
@@ -183,7 +227,7 @@ export function CreateEmployeeForm({ onSuccess, onCancel }: CreateEmployeeFormPr
           </Button>
           <Button
             type='submit'
-            disabled={isPending}
+            disabled={isPending || locationsQuery.isLoading || !hasAvailableLocations}
             className='w-full sm:w-auto'
           >
             {isPending ? t('actions.creating') : t('actions.create')}

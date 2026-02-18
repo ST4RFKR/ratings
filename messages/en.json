@@ -171,6 +171,12 @@
             "label": "Password",
             "placeholder": "At least 6 characters"
           },
+          "location": {
+            "label": "Location",
+            "placeholder": "Select location",
+            "loading": "Loading locations...",
+            "empty": "No active locations available. Create a location first."
+          },
           "role": {
             "label": "Role",
             "placeholder": "Select employee role"

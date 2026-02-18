@@ -10,12 +10,13 @@ import { z } from 'zod/v3';
 export async function POST(req: NextRequest) {
   try {
     const user = await getUserSession();
-    if (!user) {
+    if (!user || !user.activeCompanyId) {
       return ApiErrors.unauthorized('Unauthorized');
     }
     const employee = await prisma.employee.findFirst({
       where: {
         userId: user.id,
+        companyId: user.activeCompanyId,
         status: EmployeeStatus.ACTIVE,
         role: {
           in: [EmployeeRole.OWNER, EmployeeRole.MANAGER],
@@ -39,6 +40,17 @@ export async function POST(req: NextRequest) {
       return ApiErrors.conflict('User already exists');
     }
 
+    const location = await prisma.location.findFirst({
+      where: {
+        id: body.locationId,
+        companyId: employee.companyId,
+      },
+      select: { id: true },
+    });
+    if (!location) {
+      return ApiErrors.badRequest('Invalid location');
+    }
+
     const newEmployee = await prisma.$transaction(async (tx) => {
       const user = await tx.user.create({
         data: {
@@ -59,7 +71,7 @@ export async function POST(req: NextRequest) {
           role: body.role,
           status: body.status,
           companyId: employee.companyId,
-          locationId: employee.locationId,
+          locationId: body.locationId,
         },
       });
       return emp;
@@ -89,4 +101,5 @@ const createEmployeeBodySchema = z.object({
   password: z.string().min(6),
   role: z.enum(assignableRoles),
   status: z.enum(assignableStatuses),
+  locationId: z.string().trim().min(1),
 });
