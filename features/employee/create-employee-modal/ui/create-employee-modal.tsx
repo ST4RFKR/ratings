@@ -30,7 +30,7 @@ export const CreateEmployeeModal = ({ children }: CreateEmployeeModalProps) => {
       onOpenChange={setOpen}
     >
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className='sm:max-w-[520px]'>
+      <DialogContent className='sm:max-w-[560px]'>
         <DialogHeader>
           <DialogTitle>{t('title')}</DialogTitle>
           <DialogDescription>{t('description')}</DialogDescription>

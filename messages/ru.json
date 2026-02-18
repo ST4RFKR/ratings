@@ -167,27 +167,38 @@
             "label": "Email",
             "placeholder": "employee@company.com"
           },
+          "password": {
+            "label": "Пароль",
+            "placeholder": "Минимум 6 символов"
+          },
           "role": {
             "label": "Роль",
-            "placeholder": "Например: Shift Supervisor"
+            "placeholder": "Выберите роль сотрудника"
           },
-          "location": {
-            "label": "Локация",
-            "placeholder": "Например: Downtown"
-          },
-          "description": {
-            "label": "Описание",
-            "placeholder": "Необязательная заметка об обязанностях сотрудника"
-          },
-          "isActive": {
-            "label": "Активный сотрудник",
-            "description": "Сотрудник сразу появится в активном списке."
+          "status": {
+            "label": "Статус",
+            "placeholder": "Выберите статус сотрудника"
           }
         },
         "actions": {
           "cancel": "Отмена",
           "create": "Создать",
           "creating": "Создание..."
+        },
+        "options": {
+          "roles": {
+            "SUPERVISOR": "Супервайзер",
+            "REVIEWER": "Ревьюер",
+            "CASHIER": "Кассир",
+            "SALES": "Продавец",
+            "WAITER": "Официант",
+            "COOK": "Повар",
+            "STAFF": "Персонал"
+          },
+          "statuses": {
+            "PENDING": "Ожидает",
+            "ACTIVE": "Активен"
+          }
         },
         "messages": {
           "success": "Сотрудник успешно добавлен"

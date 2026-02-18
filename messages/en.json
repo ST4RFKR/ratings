@@ -167,27 +167,38 @@
             "label": "Email",
             "placeholder": "employee@company.com"
           },
+          "password": {
+            "label": "Password",
+            "placeholder": "At least 6 characters"
+          },
           "role": {
             "label": "Role",
-            "placeholder": "For example: Shift Supervisor"
+            "placeholder": "Select employee role"
           },
-          "location": {
-            "label": "Location",
-            "placeholder": "For example: Downtown"
-          },
-          "description": {
-            "label": "Description",
-            "placeholder": "Optional note about employee responsibilities"
-          },
-          "isActive": {
-            "label": "Active employee",
-            "description": "Employee will be visible in the active list right away."
+          "status": {
+            "label": "Status",
+            "placeholder": "Select employee status"
           }
         },
         "actions": {
           "cancel": "Cancel",
           "create": "Create",
           "creating": "Creating..."
+        },
+        "options": {
+          "roles": {
+            "SUPERVISOR": "Supervisor",
+            "REVIEWER": "Reviewer",
+            "CASHIER": "Cashier",
+            "SALES": "Sales",
+            "WAITER": "Waiter",
+            "COOK": "Cook",
+            "STAFF": "Staff"
+          },
+          "statuses": {
+            "PENDING": "Pending",
+            "ACTIVE": "Active"
+          }
         },
         "messages": {
           "success": "Employee added successfully"

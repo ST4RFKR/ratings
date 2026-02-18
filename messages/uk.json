@@ -167,27 +167,38 @@
             "label": "Email",
             "placeholder": "employee@company.com"
           },
+          "password": {
+            "label": "Пароль",
+            "placeholder": "Мінімум 6 символів"
+          },
           "role": {
             "label": "Роль",
-            "placeholder": "Наприклад: Shift Supervisor"
+            "placeholder": "Оберіть роль співробітника"
           },
-          "location": {
-            "label": "Локація",
-            "placeholder": "Наприклад: Downtown"
-          },
-          "description": {
-            "label": "Опис",
-            "placeholder": "Необов'язкова примітка про обов'язки співробітника"
-          },
-          "isActive": {
-            "label": "Активний співробітник",
-            "description": "Співробітник одразу з'явиться в активному списку."
+          "status": {
+            "label": "Статус",
+            "placeholder": "Оберіть статус співробітника"
           }
         },
         "actions": {
           "cancel": "Скасувати",
           "create": "Створити",
           "creating": "Створення..."
+        },
+        "options": {
+          "roles": {
+            "SUPERVISOR": "Супервайзер",
+            "REVIEWER": "Рев'юер",
+            "CASHIER": "Касир",
+            "SALES": "Продавець",
+            "WAITER": "Офіціант",
+            "COOK": "Кухар",
+            "STAFF": "Персонал"
+          },
+          "statuses": {
+            "PENDING": "Очікує",
+            "ACTIVE": "Активний"
+          }
         },
         "messages": {
           "success": "Співробітника успішно додано"

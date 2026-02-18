@@ -2,19 +2,27 @@
 
 import {
   Button,
-  Checkbox,
   Field,
   FieldDescription,
   FieldGroup,
   FieldLabel,
   Input,
-  Textarea,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from '@/shared/components/ui';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
 import { Controller, useForm } from 'react-hook-form';
-import { toast } from 'sonner';
-import { CreateEmployeeFormValues, createEmployeeSchema } from '../model/create-employee-schema';
+import {
+  assignableEmployeeRoles,
+  assignableEmployeeStatuses,
+  CreateEmployeeFormValues,
+  createEmployeeSchema,
+} from '../model/create-employee-schema';
+import { useCreateEmployee } from '../model/use-create-employee';
 
 interface CreateEmployeeFormProps {
   onSuccess?: () => void;
@@ -23,6 +31,7 @@ interface CreateEmployeeFormProps {
 
 export function CreateEmployeeForm({ onSuccess, onCancel }: CreateEmployeeFormProps) {
   const t = useTranslations('dashboard.forms.employee');
+  const { mutate: createEmployee, isPending } = useCreateEmployee();
 
   const form = useForm<CreateEmployeeFormValues>({
     resolver: zodResolver(createEmployeeSchema),
@@ -30,24 +39,25 @@ export function CreateEmployeeForm({ onSuccess, onCancel }: CreateEmployeeFormPr
     defaultValues: {
       fullName: '',
       email: '',
-      role: '',
-      location: '',
-      description: '',
-      isActive: true,
+      password: '',
+      role: 'STAFF',
+      status: 'ACTIVE',
     },
   });
 
   const onSubmit = (values: CreateEmployeeFormValues) => {
-    console.log(values);
-    toast.success(t('messages.success'));
-    form.reset();
-    onSuccess?.();
+    createEmployee(values, {
+      onSuccess: () => {
+        form.reset();
+        onSuccess?.();
+      },
+    });
   };
 
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    formState: { errors },
   } = form;
 
   return (
@@ -61,10 +71,12 @@ export function CreateEmployeeForm({ onSuccess, onCancel }: CreateEmployeeFormPr
           <Input
             id='fullName'
             placeholder={t('fields.fullName.placeholder')}
-            disabled={isSubmitting}
+            disabled={isPending}
             {...register('fullName')}
           />
-          {errors.fullName && <FieldDescription className='text-destructive'>{errors.fullName.message}</FieldDescription>}
+          {errors.fullName && (
+            <FieldDescription className='text-destructive'>{errors.fullName.message}</FieldDescription>
+          )}
         </Field>
 
         <Field>
@@ -73,86 +85,108 @@ export function CreateEmployeeForm({ onSuccess, onCancel }: CreateEmployeeFormPr
             id='email'
             type='email'
             placeholder={t('fields.email.placeholder')}
-            disabled={isSubmitting}
+            disabled={isPending}
             {...register('email')}
           />
           {errors.email && <FieldDescription className='text-destructive'>{errors.email.message}</FieldDescription>}
         </Field>
 
         <Field>
-          <FieldLabel htmlFor='role'>{t('fields.role.label')}</FieldLabel>
+          <FieldLabel htmlFor='password'>{t('fields.password.label')}</FieldLabel>
           <Input
-            id='role'
-            placeholder={t('fields.role.placeholder')}
-            disabled={isSubmitting}
-            {...register('role')}
+            id='password'
+            type='password'
+            placeholder={t('fields.password.placeholder')}
+            disabled={isPending}
+            {...register('password')}
+          />
+          {errors.password && (
+            <FieldDescription className='text-destructive'>{errors.password.message}</FieldDescription>
+          )}
+        </Field>
+
+        <Field>
+          <FieldLabel htmlFor='role'>{t('fields.role.label')}</FieldLabel>
+          <Controller
+            control={form.control}
+            name='role'
+            render={({ field }) => (
+              <Select
+                value={field.value}
+                onValueChange={field.onChange}
+                disabled={isPending}
+              >
+                <SelectTrigger
+                  id='role'
+                  className='w-full'
+                >
+                  <SelectValue placeholder={t('fields.role.placeholder')} />
+                </SelectTrigger>
+                <SelectContent>
+                  {assignableEmployeeRoles.map((role) => (
+                    <SelectItem
+                      key={role}
+                      value={role}
+                    >
+                      {t(`options.roles.${role}`)}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
           />
           {errors.role && <FieldDescription className='text-destructive'>{errors.role.message}</FieldDescription>}
         </Field>
 
         <Field>
-          <FieldLabel htmlFor='location'>{t('fields.location.label')}</FieldLabel>
-          <Input
-            id='location'
-            placeholder={t('fields.location.placeholder')}
-            disabled={isSubmitting}
-            {...register('location')}
+          <FieldLabel htmlFor='status'>{t('fields.status.label')}</FieldLabel>
+          <Controller
+            control={form.control}
+            name='status'
+            render={({ field }) => (
+              <Select
+                value={field.value}
+                onValueChange={field.onChange}
+                disabled={isPending}
+              >
+                <SelectTrigger
+                  id='status'
+                  className='w-full'
+                >
+                  <SelectValue placeholder={t('fields.status.placeholder')} />
+                </SelectTrigger>
+                <SelectContent>
+                  {assignableEmployeeStatuses.map((status) => (
+                    <SelectItem
+                      key={status}
+                      value={status}
+                    >
+                      {t(`options.statuses.${status}`)}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
           />
-          {errors.location && <FieldDescription className='text-destructive'>{errors.location.message}</FieldDescription>}
+          {errors.status && <FieldDescription className='text-destructive'>{errors.status.message}</FieldDescription>}
         </Field>
-
-        <Field>
-          <FieldLabel htmlFor='description'>{t('fields.description.label')}</FieldLabel>
-          <Textarea
-            id='description'
-            placeholder={t('fields.description.placeholder')}
-            className='resize-none'
-            disabled={isSubmitting}
-            {...register('description')}
-          />
-          {errors.description && (
-            <FieldDescription className='text-destructive'>{errors.description.message}</FieldDescription>
-          )}
-        </Field>
-
-        <Controller
-          control={form.control}
-          name='isActive'
-          render={({ field }) => (
-            <Field
-              orientation='horizontal'
-              className='items-start gap-2.5 rounded-md bg-muted/30 p-2.5 sm:p-3'
-            >
-              <Checkbox
-                id='isActive'
-                checked={field.value}
-                onCheckedChange={(checked) => field.onChange(checked === true)}
-                disabled={isSubmitting}
-              />
-              <div className='space-y-1'>
-                <FieldLabel htmlFor='isActive'>{t('fields.isActive.label')}</FieldLabel>
-                <FieldDescription>{t('fields.isActive.description')}</FieldDescription>
-              </div>
-            </Field>
-          )}
-        />
 
         <div className='flex flex-col-reverse gap-2 sm:flex-row sm:justify-end'>
           <Button
             type='button'
             variant='outline'
             onClick={onCancel}
-            disabled={isSubmitting}
+            disabled={isPending}
             className='w-full sm:w-auto'
           >
             {t('actions.cancel')}
           </Button>
           <Button
             type='submit'
-            disabled={isSubmitting}
+            disabled={isPending}
             className='w-full sm:w-auto'
           >
-            {isSubmitting ? t('actions.creating') : t('actions.create')}
+            {isPending ? t('actions.creating') : t('actions.create')}
           </Button>
         </div>
       </FieldGroup>
