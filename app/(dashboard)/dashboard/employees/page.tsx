@@ -1,17 +1,32 @@
 'use client';
 import { CreateEmployeeModal } from '@/features/employee/create-employee-modal';
+import { useGetEmployees } from '@/features/employee/get-employes';
 import { SearchInput } from '@/shared/components/common/search-input';
 import { DashboardAnalyticCard } from '@/shared/components/common/sidebar/dashboard-analytic-card';
 import { DataTable } from '@/shared/components/tables/data-table';
-import { columnsEmployees, mockEmployees } from '@/shared/components/tables/employees/columns';
+import { columnsEmployees, type Employee } from '@/shared/components/tables/employees/columns';
 import { Button } from '@/shared/components/ui';
 import { Award, MessageSquare, Plus, Star, Users } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import { useMemo } from 'react';
 
 export default function EmployeesPage() {
   const t = useTranslations('dashboard.employees');
   const a = useTranslations('dashboard.employees.analytics');
+  const employeesQuery = useGetEmployees();
 
+  const employees = useMemo<Employee[]>(() => {
+    return (employeesQuery.data ?? []).map((employee) => ({
+      id: employee.id,
+      fullName: employee.fullName,
+      role: employee.role,
+      locationName: employee.location?.name ?? '-',
+      rating: employee.rating,
+      reviews: employee._count.reviews,
+      email: employee.user.email,
+      status: employee.status,
+    }));
+  }, [employeesQuery.data]);
   const analyticsData = [
     {
       title: a('avg_rating'),
@@ -85,7 +100,8 @@ export default function EmployeesPage() {
       <div className='mt-6'>
         <DataTable
           columns={columnsEmployees}
-          data={mockEmployees}
+          data={employees}
+          filterColumnKey='fullName'
           filterPlaceholder={t('filter')}
         />
       </div>

@@ -17,117 +17,14 @@ import { useRouter } from 'next/navigation';
 
 export type Employee = {
   id: string;
-  name: string;
+  fullName: string;
   role: string;
-  location: string;
+  locationName: string;
   rating: number;
   reviews: number;
   email: string;
-  status: 'active' | 'inactive';
+  status: 'PENDING' | 'ACTIVE' | 'BLOCKED';
 };
-
-export const mockEmployees: Employee[] = [
-  {
-    id: '1',
-    name: 'John Doe',
-    role: 'Senior Manager',
-    location: 'Tech Market',
-    rating: 4.98,
-    reviews: 120,
-    email: 'john.doe@techmarket.com',
-    status: 'active',
-  },
-  {
-    id: '2',
-    name: 'Jane Smith',
-    role: 'Store Assistant',
-    location: 'Fresh Food Shop',
-    rating: 4.85,
-    reviews: 85,
-    email: 'jane.smith@freshfood.com',
-    status: 'active',
-  },
-  {
-    id: '3',
-    name: 'Mike Johnson',
-    role: 'Cashier',
-    location: 'Book World',
-    rating: 4.65,
-    reviews: 60,
-    email: 'mike.johnson@bookworld.com',
-    status: 'active',
-  },
-  {
-    id: '4',
-    name: 'Sara Patel',
-    role: 'Customer Experience Lead',
-    location: 'Green Garden',
-    rating: 4.92,
-    reviews: 102,
-    email: 'sara.patel@greengarden.com',
-    status: 'active',
-  },
-  {
-    id: '5',
-    name: 'Carlos Vega',
-    role: 'Shift Supervisor',
-    location: 'Gadget Hub',
-    rating: 4.73,
-    reviews: 75,
-    email: 'carlos.vega@gadgethub.com',
-    status: 'active',
-  },
-  {
-    id: '6',
-    name: 'Emily Carter',
-    role: 'Visual Merchandiser',
-    location: 'Fashion Store',
-    rating: 4.46,
-    reviews: 54,
-    email: 'emily.carter@fashionstore.com',
-    status: 'inactive',
-  },
-  {
-    id: '7',
-    name: 'Dmitry Ivanov',
-    role: 'Warehouse Coordinator',
-    location: 'Home Essentials',
-    rating: 4.31,
-    reviews: 48,
-    email: 'dmitry.ivanov@homeessentials.com',
-    status: 'active',
-  },
-  {
-    id: '8',
-    name: 'Priya Kumar',
-    role: 'Inventory Analyst',
-    location: 'Sport Center',
-    rating: 4.67,
-    reviews: 69,
-    email: 'priya.kumar@sportcenter.com',
-    status: 'active',
-  },
-  {
-    id: '9',
-    name: "Liam O'Connor",
-    role: 'Barista',
-    location: 'Coffee Point',
-    rating: 4.88,
-    reviews: 118,
-    email: 'liam.oconnor@coffeepoint.com',
-    status: 'active',
-  },
-  {
-    id: '10',
-    name: 'Nora Lee',
-    role: 'Assistant Store Manager',
-    location: 'Pet Paradise',
-    rating: 4.55,
-    reviews: 66,
-    email: 'nora.lee@petparadise.com',
-    status: 'inactive',
-  },
-];
 
 export const columnsEmployees: ColumnDef<Employee>[] = [
   {
@@ -162,7 +59,7 @@ export const columnsEmployees: ColumnDef<Employee>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: 'name',
+    accessorKey: 'fullName',
     header: ({ column }) => (
       <DataTableColumnHeader
         column={column}
@@ -180,7 +77,7 @@ export const columnsEmployees: ColumnDef<Employee>[] = [
     ),
   },
   {
-    accessorKey: 'location',
+    accessorKey: 'locationName',
     header: ({ column }) => (
       <DataTableColumnHeader
         column={column}
@@ -210,7 +107,7 @@ export const columnsEmployees: ColumnDef<Employee>[] = [
   {
     accessorKey: 'status',
     header: 'Status',
-    cell: ({ row }) => <StatusBadge status={row.getValue('status')} />,
+    cell: ({ row }) => <StatusBadge status={row.original.status === 'ACTIVE' ? 'active' : 'inactive'} />,
   },
   {
     id: 'actions',

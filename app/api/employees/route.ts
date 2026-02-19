@@ -7,6 +7,61 @@ import { hash } from 'argon2';
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod/v3';
 
+export async function GET() {
+  try {
+    const user = await getUserSession();
+    if (!user || !user.activeCompanyId) {
+      return ApiErrors.unauthorized('Unauthorized');
+    }
+
+    const currentEmployee = await prisma.employee.findFirst({
+      where: {
+        userId: user.id,
+        companyId: user.activeCompanyId,
+        status: EmployeeStatus.ACTIVE,
+      },
+      select: { id: true },
+    });
+
+    if (!currentEmployee) {
+      return ApiErrors.forbidden('Forbidden');
+    }
+
+    const employees = await prisma.employee.findMany({
+      where: { companyId: user.activeCompanyId },
+      select: {
+        id: true,
+        fullName: true,
+        role: true,
+        status: true,
+        rating: true,
+        locationId: true,
+        location: {
+          select: {
+            name: true,
+          },
+        },
+        user: {
+          select: {
+            email: true,
+          },
+        },
+        _count: {
+          select: {
+            reviews: true,
+          },
+        },
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    return NextResponse.json(employees, { status: 200 });
+  } catch (error) {
+    console.error('Error fetching employees:', error);
+    return ApiErrors.internal('Internal server error');
+  }
+}
+
 export async function POST(req: NextRequest) {
   try {
     const user = await getUserSession();
