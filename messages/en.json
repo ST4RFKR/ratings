@@ -209,6 +209,50 @@
         "messages": {
           "success": "Employee added successfully"
         }
+      },
+      "review": {
+        "modal": {
+          "title": "Add Review",
+          "description": "Fill in review scores for the selected employee."
+        },
+        "fields": {
+          "employee": {
+            "label": "Employee",
+            "placeholder": "Select employee",
+            "loading": "Loading employees...",
+            "empty": "No active employees available."
+          },
+          "location": {
+            "label": "Location",
+            "placeholder": "Select location",
+            "loading": "Loading locations...",
+            "empty": "No active locations available."
+          },
+          "speed": {
+            "label": "Speed (1-5)"
+          },
+          "politeness": {
+            "label": "Politeness (1-5)"
+          },
+          "quality": {
+            "label": "Quality (1-5)"
+          },
+          "professionalism": {
+            "label": "Professionalism (1-5)"
+          },
+          "cleanliness": {
+            "label": "Cleanliness (1-5)"
+          },
+          "comment": {
+            "label": "Comment",
+            "placeholder": "Optional comment"
+          }
+        },
+        "actions": {
+          "cancel": "Cancel",
+          "create": "Create review",
+          "create_loading": "Creating..."
+        }
       }
     }
   },

@@ -11,6 +11,7 @@ export const ROUTES = {
     EMPLOYEE_DETAILS: (id: string) => `/dashboard/employees/${id}`,
     REVIEWS: '/dashboard/reviews',
     REVIEWS_NEW: '/dashboard/reviews/new',
+    REVIEWS_NEW_MODAL: '/dashboard/reviews?modal=create-review',
     STORES: '/dashboard/stores',
     STORE_DETAILS: (id: string) => `/dashboard/stores/${id}`,
   },
