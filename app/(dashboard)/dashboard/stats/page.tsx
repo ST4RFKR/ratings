@@ -5,17 +5,16 @@ import { useGetLocation } from '@/features/location/get-location/model/use-get-l
 import { useGetReviews } from '@/features/review/get-reviews';
 import {
   ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
   Combobox,
   ComboboxContent,
   ComboboxEmpty,
   ComboboxInput,
   ComboboxItem,
   ComboboxList,
-  ChartTooltip,
-  ChartTooltipContent,
   Field,
   FieldLabel,
-  InputGroupAddon,
   Tabs,
   TabsContent,
   TabsList,
@@ -24,8 +23,8 @@ import {
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/components/ui/card';
 import { ROUTES } from '@/shared/config';
 import { BarChart3, Search, Store, Users } from 'lucide-react';
-import { useRouter } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
+import { useRouter } from 'next/navigation';
 import { useMemo } from 'react';
 import { Area, AreaChart, CartesianGrid, Line, LineChart, XAxis, YAxis } from 'recharts';
 
@@ -176,12 +175,13 @@ export default function StatsPage() {
           >
             <ComboboxInput
               placeholder={t('selectors.employee.placeholder')}
+              className='[&_[data-slot=input-group-control]]:pl-9'
               showClear
               disabled={employeesQuery.isLoading}
             >
-              <InputGroupAddon>
+              <span className='pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-muted-foreground'>
                 <Search className='size-4 text-muted-foreground' />
-              </InputGroupAddon>
+              </span>
             </ComboboxInput>
             <ComboboxContent>
               <ComboboxEmpty>{t('selectors.employee.empty')}</ComboboxEmpty>
@@ -212,12 +212,13 @@ export default function StatsPage() {
           >
             <ComboboxInput
               placeholder={t('selectors.store.placeholder')}
+              className='[&_[data-slot=input-group-control]]:pl-9'
               showClear
               disabled={locationsQuery.isLoading}
             >
-              <InputGroupAddon>
+              <span className='pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-muted-foreground'>
                 <Search className='size-4 text-muted-foreground' />
-              </InputGroupAddon>
+              </span>
             </ComboboxInput>
             <ComboboxContent>
               <ComboboxEmpty>{t('selectors.store.empty')}</ComboboxEmpty>
