@@ -1,7 +1,7 @@
 import { EmployeeStatus, LocationStatus } from '@/prisma/generated/prisma/enums';
 import prisma from '@/prisma/prisma-client';
 import { ApiErrors } from '@/shared/lib/server/api-error';
-import { getUserSession } from '@/shared/lib/server/get-user-session';
+import { withApiGuard } from '@/shared/lib/server/with-api-guard';
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod/v3';
 
@@ -29,233 +29,211 @@ const getReviewsQuerySchema = z.object({
 });
 
 export async function GET(req: NextRequest) {
-  try {
-    const user = await getUserSession();
+  return withApiGuard(
+    async ({ req, companyId }) => {
+      try {
+        const parsedQuery = getReviewsQuerySchema.safeParse({
+          employeeId: req.nextUrl.searchParams.get('employeeId') ?? undefined,
+          locationId: req.nextUrl.searchParams.get('locationId') ?? undefined,
+          search: req.nextUrl.searchParams.get('search') ?? undefined,
+        });
 
-    if (!user || !user.activeCompanyId) {
-      return ApiErrors.unauthorized('Unauthorized');
-    }
+        if (!parsedQuery.success) {
+          return ApiErrors.badRequest('Invalid reviews filters');
+        }
 
-    const currentEmployee = await prisma.employee.findFirst({
-      where: {
-        userId: user.id,
-        companyId: user.activeCompanyId,
-        status: EmployeeStatus.ACTIVE,
-      },
-      select: { id: true },
-    });
-
-    if (!currentEmployee) {
-      return ApiErrors.forbidden('Forbidden');
-    }
-
-    const parsedQuery = getReviewsQuerySchema.safeParse({
-      employeeId: req.nextUrl.searchParams.get('employeeId') ?? undefined,
-      locationId: req.nextUrl.searchParams.get('locationId') ?? undefined,
-      search: req.nextUrl.searchParams.get('search') ?? undefined,
-    });
-
-    if (!parsedQuery.success) {
-      return ApiErrors.badRequest('Invalid reviews filters');
-    }
-
-    const reviews = await prisma.review.findMany({
-      where: {
-        companyId: user.activeCompanyId,
-        ...(parsedQuery.data.employeeId ? { employeeId: parsedQuery.data.employeeId } : {}),
-        ...(parsedQuery.data.locationId ? { locationId: parsedQuery.data.locationId } : {}),
-        ...(parsedQuery.data.search
-          ? {
-              OR: [
-                { employee: { fullName: { contains: parsedQuery.data.search, mode: 'insensitive' } } },
-                { location: { name: { contains: parsedQuery.data.search, mode: 'insensitive' } } },
-                { comment: { contains: parsedQuery.data.search, mode: 'insensitive' } },
-              ],
-            }
-          : {}),
-      },
-      select: {
-        id: true,
-        comment: true,
-        createdAt: true,
-        employee: {
+        const reviews = await prisma.review.findMany({
+          where: {
+            companyId: companyId!,
+            ...(parsedQuery.data.employeeId ? { employeeId: parsedQuery.data.employeeId } : {}),
+            ...(parsedQuery.data.locationId ? { locationId: parsedQuery.data.locationId } : {}),
+            ...(parsedQuery.data.search
+              ? {
+                  OR: [
+                    { employee: { fullName: { contains: parsedQuery.data.search, mode: 'insensitive' } } },
+                    { location: { name: { contains: parsedQuery.data.search, mode: 'insensitive' } } },
+                    { comment: { contains: parsedQuery.data.search, mode: 'insensitive' } },
+                  ],
+                }
+              : {}),
+          },
           select: {
             id: true,
-            slug: true,
-            fullName: true,
+            comment: true,
+            createdAt: true,
+            employee: {
+              select: {
+                id: true,
+                slug: true,
+                fullName: true,
+              },
+            },
+            location: {
+              select: {
+                id: true,
+                slug: true,
+                name: true,
+              },
+            },
+            scores: {
+              select: {
+                value: true,
+              },
+            },
           },
-        },
-        location: {
-          select: {
-            id: true,
-            slug: true,
-            name: true,
+          orderBy: {
+            createdAt: 'desc',
           },
-        },
-        scores: {
-          select: {
-            value: true,
-          },
-        },
-      },
-      orderBy: {
-        createdAt: 'desc',
-      },
-    });
+        });
 
-    const payload = reviews.map((review) => {
-      const totalScore = review.scores.reduce((sum, score) => sum + score.value, 0);
-      const averageScore = review.scores.length ? Number((totalScore / review.scores.length).toFixed(2)) : 0;
+        const payload = reviews.map((review) => {
+          const totalScore = review.scores.reduce((sum, score) => sum + score.value, 0);
+          const averageScore = review.scores.length ? Number((totalScore / review.scores.length).toFixed(2)) : 0;
 
-      return {
-        id: review.id,
-        comment: review.comment,
-        createdAt: review.createdAt,
-        rating: averageScore,
-        employee: review.employee,
-        location: review.location,
-      };
-    });
+          return {
+            id: review.id,
+            comment: review.comment,
+            createdAt: review.createdAt,
+            rating: averageScore,
+            employee: review.employee,
+            location: review.location,
+          };
+        });
 
-    return NextResponse.json(payload, { status: 200 });
-  } catch (error) {
-    console.error('Error fetching reviews:', error);
-    return ApiErrors.internal('Internal server error');
-  }
+        return NextResponse.json(payload, { status: 200 });
+      } catch (error) {
+        console.error('Error fetching reviews:', error);
+        return ApiErrors.internal('Internal server error');
+      }
+    },
+    {
+      requireActiveCompany: true,
+      requireActiveEmployee: true,
+    },
+  )(req);
 }
 
 export async function POST(req: NextRequest) {
-  try {
-    const user = await getUserSession();
+  return withApiGuard(
+    async ({ req, companyId }) => {
+      try {
+        const rawBody = await req.json();
+        const parsedBody = createReviewBodySchema.safeParse(rawBody);
 
-    if (!user || !user.activeCompanyId) {
-      return ApiErrors.unauthorized('Unauthorized');
-    }
+        if (!parsedBody.success) {
+          return ApiErrors.badRequest('Invalid review payload');
+        }
 
-    const currentEmployee = await prisma.employee.findFirst({
-      where: {
-        userId: user.id,
-        companyId: user.activeCompanyId,
-        status: EmployeeStatus.ACTIVE,
-      },
-      select: { id: true },
-    });
+        const body = parsedBody.data;
 
-    if (!currentEmployee) {
-      return ApiErrors.forbidden('Forbidden');
-    }
-
-    const rawBody = await req.json();
-    const parsedBody = createReviewBodySchema.safeParse(rawBody);
-
-    if (!parsedBody.success) {
-      return ApiErrors.badRequest('Invalid review payload');
-    }
-
-    const body = parsedBody.data;
-
-    const employee = await prisma.employee.findFirst({
-      where: {
-        id: body.employeeId,
-        companyId: user.activeCompanyId,
-        status: EmployeeStatus.ACTIVE,
-      },
-      select: {
-        id: true,
-        rating: true,
-      },
-    });
-
-    if (!employee) {
-      return ApiErrors.badRequest('Selected employee is not available for review');
-    }
-
-    const location = await prisma.location.findFirst({
-      where: {
-        id: body.locationId,
-        companyId: user.activeCompanyId,
-        status: LocationStatus.ACTIVE,
-      },
-      select: {
-        id: true,
-        rating: true,
-      },
-    });
-
-    if (!location) {
-      return ApiErrors.badRequest('Invalid employee location');
-    }
-
-    const company = await prisma.company.findUnique({
-      where: { id: user.activeCompanyId },
-      select: {
-        id: true,
-        rating: true,
-      },
-    });
-
-    if (!company) {
-      return ApiErrors.badRequest('Company not found');
-    }
-
-    const reviewRating =
-      (body.speed + body.politeness + body.quality + body.professionalism + body.cleanliness) / 5;
-
-    const review = await prisma.$transaction(async (tx) => {
-      const [employeeReviewsCount, locationReviewsCount, companyReviewsCount] = await Promise.all([
-        tx.review.count({ where: { employeeId: employee.id } }),
-        tx.review.count({ where: { locationId: location.id } }),
-        tx.review.count({ where: { companyId: company.id } }),
-      ]);
-
-      const newReview = await tx.review.create({
-        data: {
-          employeeId: employee.id,
-          locationId: location.id,
-          companyId: company.id,
-          comment: body.comment || null,
-          scores: {
-            create: [
-              { category: 'SPEED', value: body.speed },
-              { category: 'POLITENESS', value: body.politeness },
-              { category: 'QUALITY', value: body.quality },
-              { category: 'PROFESSIONALISM', value: body.professionalism },
-              { category: 'CLEANLINESS', value: body.cleanliness },
-            ],
+        const employee = await prisma.employee.findFirst({
+          where: {
+            id: body.employeeId,
+            companyId: companyId!,
+            status: EmployeeStatus.ACTIVE,
           },
-        },
-        include: {
-          scores: true,
-        },
-      });
-
-      await Promise.all([
-        tx.employee.update({
-          where: { id: employee.id },
-          data: {
-            rating: recalculateRating(employee.rating, employeeReviewsCount, reviewRating),
+          select: {
+            id: true,
+            rating: true,
           },
-        }),
-        tx.location.update({
-          where: { id: location.id },
-          data: {
-            rating: recalculateRating(location.rating, locationReviewsCount, reviewRating),
-          },
-        }),
-        tx.company.update({
-          where: { id: company.id },
-          data: {
-            rating: recalculateRating(company.rating, companyReviewsCount, reviewRating),
-          },
-        }),
-      ]);
+        });
 
-      return newReview;
-    });
+        if (!employee) {
+          return ApiErrors.badRequest('Selected employee is not available for review');
+        }
 
-    return NextResponse.json({ review }, { status: 201 });
-  } catch (error) {
-    console.error('Error creating review:', error);
-    return ApiErrors.internal('Internal server error');
-  }
+        const location = await prisma.location.findFirst({
+          where: {
+            id: body.locationId,
+            companyId: companyId!,
+            status: LocationStatus.ACTIVE,
+          },
+          select: {
+            id: true,
+            rating: true,
+          },
+        });
+
+        if (!location) {
+          return ApiErrors.badRequest('Invalid employee location');
+        }
+
+        const company = await prisma.company.findUnique({
+          where: { id: companyId! },
+          select: {
+            id: true,
+            rating: true,
+          },
+        });
+
+        if (!company) {
+          return ApiErrors.badRequest('Company not found');
+        }
+
+        const reviewRating =
+          (body.speed + body.politeness + body.quality + body.professionalism + body.cleanliness) / 5;
+
+        const review = await prisma.$transaction(async (tx) => {
+          const [employeeReviewsCount, locationReviewsCount, companyReviewsCount] = await Promise.all([
+            tx.review.count({ where: { employeeId: employee.id } }),
+            tx.review.count({ where: { locationId: location.id } }),
+            tx.review.count({ where: { companyId: company.id } }),
+          ]);
+
+          const newReview = await tx.review.create({
+            data: {
+              employeeId: employee.id,
+              locationId: location.id,
+              companyId: company.id,
+              comment: body.comment || null,
+              scores: {
+                create: [
+                  { category: 'SPEED', value: body.speed },
+                  { category: 'POLITENESS', value: body.politeness },
+                  { category: 'QUALITY', value: body.quality },
+                  { category: 'PROFESSIONALISM', value: body.professionalism },
+                  { category: 'CLEANLINESS', value: body.cleanliness },
+                ],
+              },
+            },
+            include: {
+              scores: true,
+            },
+          });
+
+          await Promise.all([
+            tx.employee.update({
+              where: { id: employee.id },
+              data: {
+                rating: recalculateRating(employee.rating, employeeReviewsCount, reviewRating),
+              },
+            }),
+            tx.location.update({
+              where: { id: location.id },
+              data: {
+                rating: recalculateRating(location.rating, locationReviewsCount, reviewRating),
+              },
+            }),
+            tx.company.update({
+              where: { id: company.id },
+              data: {
+                rating: recalculateRating(company.rating, companyReviewsCount, reviewRating),
+              },
+            }),
+          ]);
+
+          return newReview;
+        });
+
+        return NextResponse.json({ review }, { status: 201 });
+      } catch (error) {
+        console.error('Error creating review:', error);
+        return ApiErrors.internal('Internal server error');
+      }
+    },
+    {
+      requireActiveCompany: true,
+      requireActiveEmployee: true,
+    },
+  )(req);
 }

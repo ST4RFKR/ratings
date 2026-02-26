@@ -1,8 +1,8 @@
 import { EmployeeRole, EmployeeStatus, UserRole } from '@/prisma/generated/prisma/enums';
 import prisma from '@/prisma/prisma-client';
 import { ApiErrors } from '@/shared/lib/server/api-error';
-import { getUserSession } from '@/shared/lib/server/get-user-session';
 import { slug } from '@/shared/lib/server/slugify';
+import { withApiGuard } from '@/shared/lib/server/with-api-guard';
 import { hash } from 'argon2';
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod/v3';
@@ -12,156 +12,138 @@ const getEmployeesQuerySchema = z.object({
 });
 
 export async function GET(req: NextRequest) {
-  try {
-    const user = await getUserSession();
-    if (!user || !user.activeCompanyId) {
-      return ApiErrors.unauthorized('Unauthorized');
-    }
+  return withApiGuard(
+    async ({ req, companyId }) => {
+      try {
+        const parsedQuery = getEmployeesQuerySchema.safeParse({
+          search: req.nextUrl.searchParams.get('search') ?? undefined,
+        });
 
-    const currentEmployee = await prisma.employee.findFirst({
-      where: {
-        userId: user.id,
-        companyId: user.activeCompanyId,
-        status: EmployeeStatus.ACTIVE,
-      },
-      select: { id: true },
-    });
+        if (!parsedQuery.success) {
+          return ApiErrors.badRequest('Invalid employees filters');
+        }
 
-    if (!currentEmployee) {
-      return ApiErrors.forbidden('Forbidden');
-    }
-
-    const parsedQuery = getEmployeesQuerySchema.safeParse({
-      search: req.nextUrl.searchParams.get('search') ?? undefined,
-    });
-
-    if (!parsedQuery.success) {
-      return ApiErrors.badRequest('Invalid employees filters');
-    }
-
-    const search = parsedQuery.data.search;
-
-    const employees = await prisma.employee.findMany({
-      where: {
-        companyId: user.activeCompanyId,
-        ...(search
-          ? {
-              OR: [
-                { fullName: { contains: search, mode: 'insensitive' } },
-                { user: { email: { contains: search, mode: 'insensitive' } } },
-                { location: { name: { contains: search, mode: 'insensitive' } } },
-              ],
-            }
-          : {}),
-      },
-      select: {
-        id: true,
-        fullName: true,
-        role: true,
-        status: true,
-        rating: true,
-        locationId: true,
-        location: {
-          select: {
-            name: true,
+        const search = parsedQuery.data.search;
+        const employees = await prisma.employee.findMany({
+          where: {
+            companyId: companyId!,
+            ...(search
+              ? {
+                  OR: [
+                    { fullName: { contains: search, mode: 'insensitive' } },
+                    { user: { email: { contains: search, mode: 'insensitive' } } },
+                    { location: { name: { contains: search, mode: 'insensitive' } } },
+                  ],
+                }
+              : {}),
           },
-        },
-        user: {
           select: {
-            email: true,
+            id: true,
+            fullName: true,
+            role: true,
+            status: true,
+            rating: true,
+            locationId: true,
+            location: {
+              select: {
+                name: true,
+              },
+            },
+            user: {
+              select: {
+                email: true,
+              },
+            },
+            _count: {
+              select: {
+                reviews: true,
+              },
+            },
           },
-        },
-        _count: {
-          select: {
-            reviews: true,
-          },
-        },
-      },
-      orderBy: { createdAt: 'desc' },
-    });
+          orderBy: { createdAt: 'desc' },
+        });
 
-    return NextResponse.json(employees, { status: 200 });
-  } catch (error) {
-    console.error('Error fetching employees:', error);
-    return ApiErrors.internal('Internal server error');
-  }
+        return NextResponse.json(employees, { status: 200 });
+      } catch (error) {
+        console.error('Error fetching employees:', error);
+        return ApiErrors.internal('Internal server error');
+      }
+    },
+    {
+      requireActiveCompany: true,
+      requireActiveEmployee: true,
+    },
+  )(req);
 }
 
 export async function POST(req: NextRequest) {
-  try {
-    const user = await getUserSession();
-    if (!user || !user.activeCompanyId) {
-      return ApiErrors.unauthorized('Unauthorized');
-    }
-    const employee = await prisma.employee.findFirst({
-      where: {
-        userId: user.id,
-        companyId: user.activeCompanyId,
-        status: EmployeeStatus.ACTIVE,
-        role: {
-          in: [EmployeeRole.OWNER, EmployeeRole.MANAGER],
-        },
-      },
-    });
-    if (!employee) {
-      return ApiErrors.forbidden('You do not have permission to add employees');
-    }
-    const rawBody = await req.json();
-    const parsedBody = createEmployeeBodySchema.safeParse(rawBody);
-    if (!parsedBody.success) {
-      return ApiErrors.badRequest('Invalid employee payload');
-    }
-    const body = parsedBody.data;
+  return withApiGuard(
+    async ({ req, employee }) => {
+      try {
+        const rawBody = await req.json();
+        const parsedBody = createEmployeeBodySchema.safeParse(rawBody);
+        if (!parsedBody.success) {
+          return ApiErrors.badRequest('Invalid employee payload');
+        }
+        const body = parsedBody.data;
 
-    const existingUser = await prisma.user.findUnique({
-      where: { email: body.email },
-    });
-    if (existingUser) {
-      return ApiErrors.conflict('User already exists');
-    }
+        const existingUser = await prisma.user.findUnique({
+          where: { email: body.email },
+        });
+        if (existingUser) {
+          return ApiErrors.conflict('User already exists');
+        }
 
-    const location = await prisma.location.findFirst({
-      where: {
-        id: body.locationId,
-        companyId: employee.companyId,
-      },
-      select: { id: true },
-    });
-    if (!location) {
-      return ApiErrors.badRequest('Invalid location');
-    }
+        const location = await prisma.location.findFirst({
+          where: {
+            id: body.locationId,
+            companyId: employee!.companyId,
+          },
+          select: { id: true },
+        });
+        if (!location) {
+          return ApiErrors.badRequest('Invalid location');
+        }
 
-    const newEmployee = await prisma.$transaction(async (tx) => {
-      const user = await tx.user.create({
-        data: {
-          email: body.email,
-          fullName: body.fullName,
-          role: UserRole.USER,
-          activeCompanyId: employee.companyId,
-          verified: new Date(),
-          password: await hash(body.password),
-        },
-      });
+        const newEmployee = await prisma.$transaction(async (tx) => {
+          const user = await tx.user.create({
+            data: {
+              email: body.email,
+              fullName: body.fullName,
+              role: UserRole.USER,
+              activeCompanyId: employee!.companyId,
+              verified: new Date(),
+              password: await hash(body.password),
+            },
+          });
 
-      const emp = await tx.employee.create({
-        data: {
-          userId: user.id,
-          fullName: user.fullName,
-          slug: slug(user.fullName),
-          role: body.role,
-          status: body.status,
-          companyId: employee.companyId,
-          locationId: body.locationId,
-        },
-      });
-      return emp;
-    });
+          const emp = await tx.employee.create({
+            data: {
+              userId: user.id,
+              fullName: user.fullName,
+              slug: slug(user.fullName),
+              role: body.role,
+              status: body.status,
+              companyId: employee!.companyId,
+              locationId: body.locationId,
+            },
+          });
+          return emp;
+        });
 
-    return NextResponse.json({ employee: newEmployee }, { status: 201 });
-  } catch (error) {
-    console.error('Error adding employee:', error);
-    return ApiErrors.internal('Internal server error');
-  }
+        return NextResponse.json({ employee: newEmployee }, { status: 201 });
+      } catch (error) {
+        console.error('Error adding employee:', error);
+        return ApiErrors.internal('Internal server error');
+      }
+    },
+    {
+      requireActiveCompany: true,
+      requireActiveEmployee: true,
+      allowedEmployeeRoles: [EmployeeRole.OWNER, EmployeeRole.MANAGER],
+      forbiddenMessage: 'You do not have permission to add employees',
+    },
+  )(req);
 }
 
 const assignableRoles = [
