@@ -33,6 +33,7 @@ import { DataTablePagination } from './data-table-pagination';
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
+  showFilter?: boolean;
   filterColumnKey?: string;
   filterPlaceholder?: string;
 }
@@ -40,6 +41,7 @@ interface DataTableProps<TData, TValue> {
 export function DataTable<TData, TValue>({
   columns,
   data,
+  showFilter = true,
   filterColumnKey = 'name',
   filterPlaceholder = 'Filter employees...',
 }: DataTableProps<TData, TValue>) {
@@ -71,12 +73,14 @@ export function DataTable<TData, TValue>({
   return (
     <div>
       <div className='flex items-center py-4'>
-        <Input
-          placeholder={filterPlaceholder}
-          value={(filterColumn?.getFilterValue() as string) ?? ''}
-          onChange={(event) => filterColumn?.setFilterValue(event.target.value)}
-          className='max-w-sm'
-        />
+        {showFilter && (
+          <Input
+            placeholder={filterPlaceholder}
+            value={(filterColumn?.getFilterValue() as string) ?? ''}
+            onChange={(event) => filterColumn?.setFilterValue(event.target.value)}
+            className='max-w-sm'
+          />
+        )}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button

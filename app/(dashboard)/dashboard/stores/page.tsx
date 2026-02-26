@@ -9,7 +9,7 @@ import { columnsStores, type LocationTableRow } from '@/shared/components/tables
 import { Button } from '@/shared/components/ui/button';
 import { Award, Plus, Star, Store, Users } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 
 function mapLocationStatus(status: 'ACTIVE' | 'PENDING' | 'BLOCKED'): 'active' | 'inactive' {
   if (status === 'ACTIVE') {
@@ -22,7 +22,8 @@ function mapLocationStatus(status: 'ACTIVE' | 'PENDING' | 'BLOCKED'): 'active' |
 export default function StoresPage() {
   const t = useTranslations('dashboard.stores');
   const a = useTranslations('dashboard.stores.analytics');
-  const locationsQuery = useGetLocation();
+  const [search, setSearch] = useState('');
+  const locationsQuery = useGetLocation({ search });
 
   const locations = useMemo<LocationTableRow[]>(() => {
     return (locationsQuery.data ?? []).map((location) => ({
@@ -85,7 +86,11 @@ export default function StoresPage() {
           <h1 className='text-2xl font-semibold'>{t('title')}</h1>
         </div>
         <div className='flex items-center gap-3'>
-          <SearchInput placeholder={t('search')} />
+          <SearchInput
+            placeholder={t('search')}
+            onDebouncedChange={setSearch}
+            className='w-full md:w-[280px]'
+          />
           <CreateLocationModal>
             <Button>
               <Plus className='mr-1' />
@@ -109,7 +114,7 @@ export default function StoresPage() {
         <DataTable
           columns={columnsStores}
           data={locations}
-          filterPlaceholder={t('search')}
+          showFilter={false}
         />
       </div>
     </div>

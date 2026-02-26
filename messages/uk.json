@@ -109,6 +109,13 @@
       "new": {
         "title": "Додати оцінку",
         "description": "Форма додавання нової оцінки"
+      },
+      "search": "Search by employee...",
+      "filters": {
+        "store": "Store",
+        "employee": "Employee",
+        "all_stores": "All stores",
+        "all_employees": "All employees"
       }
     },
     "stats": {

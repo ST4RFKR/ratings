@@ -4,8 +4,13 @@ import { ApiErrors } from '@/shared/lib/server/api-error';
 import { getUserSession } from '@/shared/lib/server/get-user-session';
 import { slug } from '@/shared/lib/server/slugify';
 import { NextRequest, NextResponse } from 'next/server';
+import { z } from 'zod/v3';
 
-export async function GET() {
+const getLocationsQuerySchema = z.object({
+  search: z.string().trim().max(100).optional(),
+});
+
+export async function GET(req: NextRequest) {
   try {
     const user = await getUserSession();
 
@@ -25,11 +30,32 @@ export async function GET() {
       return ApiErrors.forbidden('Forbidden');
     }
 
+    const parsedQuery = getLocationsQuerySchema.safeParse({
+      search: req.nextUrl.searchParams.get('search') ?? undefined,
+    });
+
+    if (!parsedQuery.success) {
+      return ApiErrors.badRequest('Invalid locations filters');
+    }
+
+    const search = parsedQuery.data.search;
+
     const locations = await prisma.location.findMany({
       where: {
         companyId: employee.companyId,
+        ...(search
+          ? {
+              OR: [
+                { name: { contains: search, mode: 'insensitive' } },
+                { email: { contains: search, mode: 'insensitive' } },
+                { slug: { contains: search, mode: 'insensitive' } },
+              ],
+            }
+          : {}),
       },
+      orderBy: { createdAt: 'desc' },
     });
+
     return NextResponse.json(locations, { status: 200 });
   } catch (error) {
     console.error('Error fetching locations:', error);

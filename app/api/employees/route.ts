@@ -7,7 +7,11 @@ import { hash } from 'argon2';
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod/v3';
 
-export async function GET() {
+const getEmployeesQuerySchema = z.object({
+  search: z.string().trim().max(100).optional(),
+});
+
+export async function GET(req: NextRequest) {
   try {
     const user = await getUserSession();
     if (!user || !user.activeCompanyId) {
@@ -27,8 +31,29 @@ export async function GET() {
       return ApiErrors.forbidden('Forbidden');
     }
 
+    const parsedQuery = getEmployeesQuerySchema.safeParse({
+      search: req.nextUrl.searchParams.get('search') ?? undefined,
+    });
+
+    if (!parsedQuery.success) {
+      return ApiErrors.badRequest('Invalid employees filters');
+    }
+
+    const search = parsedQuery.data.search;
+
     const employees = await prisma.employee.findMany({
-      where: { companyId: user.activeCompanyId },
+      where: {
+        companyId: user.activeCompanyId,
+        ...(search
+          ? {
+              OR: [
+                { fullName: { contains: search, mode: 'insensitive' } },
+                { user: { email: { contains: search, mode: 'insensitive' } } },
+                { location: { name: { contains: search, mode: 'insensitive' } } },
+              ],
+            }
+          : {}),
+      },
       select: {
         id: true,
         fullName: true,

@@ -8,12 +8,13 @@ import { columnsEmployees, type Employee } from '@/shared/components/tables/empl
 import { Button } from '@/shared/components/ui';
 import { Award, MessageSquare, Plus, Star, Users } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 
 export default function EmployeesPage() {
   const t = useTranslations('dashboard.employees');
   const a = useTranslations('dashboard.employees.analytics');
-  const employeesQuery = useGetEmployees();
+  const [search, setSearch] = useState('');
+  const employeesQuery = useGetEmployees({ search });
 
   const employees = useMemo<Employee[]>(() => {
     return (employeesQuery.data ?? []).map((employee) => ({
@@ -77,7 +78,11 @@ export default function EmployeesPage() {
           <h1 className='text-2xl font-semibold'>{t('title')}</h1>
         </div>
         <div className='flex items-center gap-3'>
-          <SearchInput placeholder={t('search')} />
+          <SearchInput
+            placeholder={t('search')}
+            onDebouncedChange={setSearch}
+            className='w-full md:w-[280px]'
+          />
           <CreateEmployeeModal>
             <Button>
               <Plus className='mr-1' />
@@ -101,8 +106,7 @@ export default function EmployeesPage() {
         <DataTable
           columns={columnsEmployees}
           data={employees}
-          filterColumnKey='fullName'
-          filterPlaceholder={t('filter')}
+          showFilter={false}
         />
       </div>
     </div>

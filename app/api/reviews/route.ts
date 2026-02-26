@@ -22,6 +22,108 @@ function recalculateRating(currentRating: number, totalReviews: number, reviewRa
   return Number(result.toFixed(2));
 }
 
+const getReviewsQuerySchema = z.object({
+  employeeId: z.string().trim().min(1).optional(),
+  locationId: z.string().trim().min(1).optional(),
+  search: z.string().trim().max(100).optional(),
+});
+
+export async function GET(req: NextRequest) {
+  try {
+    const user = await getUserSession();
+
+    if (!user || !user.activeCompanyId) {
+      return ApiErrors.unauthorized('Unauthorized');
+    }
+
+    const currentEmployee = await prisma.employee.findFirst({
+      where: {
+        userId: user.id,
+        companyId: user.activeCompanyId,
+        status: EmployeeStatus.ACTIVE,
+      },
+      select: { id: true },
+    });
+
+    if (!currentEmployee) {
+      return ApiErrors.forbidden('Forbidden');
+    }
+
+    const parsedQuery = getReviewsQuerySchema.safeParse({
+      employeeId: req.nextUrl.searchParams.get('employeeId') ?? undefined,
+      locationId: req.nextUrl.searchParams.get('locationId') ?? undefined,
+      search: req.nextUrl.searchParams.get('search') ?? undefined,
+    });
+
+    if (!parsedQuery.success) {
+      return ApiErrors.badRequest('Invalid reviews filters');
+    }
+
+    const reviews = await prisma.review.findMany({
+      where: {
+        companyId: user.activeCompanyId,
+        ...(parsedQuery.data.employeeId ? { employeeId: parsedQuery.data.employeeId } : {}),
+        ...(parsedQuery.data.locationId ? { locationId: parsedQuery.data.locationId } : {}),
+        ...(parsedQuery.data.search
+          ? {
+              OR: [
+                { employee: { fullName: { contains: parsedQuery.data.search, mode: 'insensitive' } } },
+                { location: { name: { contains: parsedQuery.data.search, mode: 'insensitive' } } },
+                { comment: { contains: parsedQuery.data.search, mode: 'insensitive' } },
+              ],
+            }
+          : {}),
+      },
+      select: {
+        id: true,
+        comment: true,
+        createdAt: true,
+        employee: {
+          select: {
+            id: true,
+            slug: true,
+            fullName: true,
+          },
+        },
+        location: {
+          select: {
+            id: true,
+            slug: true,
+            name: true,
+          },
+        },
+        scores: {
+          select: {
+            value: true,
+          },
+        },
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+
+    const payload = reviews.map((review) => {
+      const totalScore = review.scores.reduce((sum, score) => sum + score.value, 0);
+      const averageScore = review.scores.length ? Number((totalScore / review.scores.length).toFixed(2)) : 0;
+
+      return {
+        id: review.id,
+        comment: review.comment,
+        createdAt: review.createdAt,
+        rating: averageScore,
+        employee: review.employee,
+        location: review.location,
+      };
+    });
+
+    return NextResponse.json(payload, { status: 200 });
+  } catch (error) {
+    console.error('Error fetching reviews:', error);
+    return ApiErrors.internal('Internal server error');
+  }
+}
+
 export async function POST(req: NextRequest) {
   try {
     const user = await getUserSession();

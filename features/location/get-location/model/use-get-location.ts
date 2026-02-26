@@ -1,9 +1,9 @@
 import { useQuery } from '@tanstack/react-query';
-import { getLocation } from '../api/get-location';
+import { getLocation, type GetLocationsParams } from '../api/get-location';
 
-export function useGetLocation() {
+export function useGetLocation(params: GetLocationsParams = {}) {
   return useQuery({
-    queryKey: ['locations'],
-    queryFn: getLocation,
+    queryKey: ['locations', params.search ?? ''],
+    queryFn: () => getLocation(params),
   });
 }

@@ -109,6 +109,13 @@
       "new": {
         "title": "Добавить оценку",
         "description": "Форма добавления новой оценки"
+      },
+      "search": "Search by employee...",
+      "filters": {
+        "store": "Store",
+        "employee": "Employee",
+        "all_stores": "All stores",
+        "all_employees": "All employees"
       }
     },
     "stats": {

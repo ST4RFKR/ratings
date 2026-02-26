@@ -18,8 +18,21 @@ export interface EmployeeDto {
   };
 }
 
-export async function getEmployees(): Promise<EmployeeDto[]> {
-  const response = await apiInstance.get<EmployeeDto[]>('/employees');
+export interface GetEmployeesParams {
+  search?: string;
+}
+
+export async function getEmployees(params: GetEmployeesParams = {}): Promise<EmployeeDto[]> {
+  const searchParams = new URLSearchParams();
+
+  if (params.search) {
+    searchParams.set('search', params.search);
+  }
+
+  const query = searchParams.toString();
+  const endpoint = query ? `/employees?${query}` : '/employees';
+
+  const response = await apiInstance.get<EmployeeDto[]>(endpoint);
 
   return response.data;
 }

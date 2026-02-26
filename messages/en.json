@@ -106,6 +106,13 @@
     "reviews": {
       "title": "Reviews",
       "description": "All employee reviews",
+      "search": "Search by employee...",
+      "filters": {
+        "store": "Store",
+        "employee": "Employee",
+        "all_stores": "All stores",
+        "all_employees": "All employees"
+      },
       "new": {
         "title": "Add Review",
         "description": "New review addition form"

@@ -1,9 +1,9 @@
 import { useQuery } from '@tanstack/react-query';
-import { getEmployees } from '../api/get-employees.api';
+import { getEmployees, type GetEmployeesParams } from '../api/get-employees.api';
 
-export function useGetEmployees() {
+export function useGetEmployees(params: GetEmployeesParams = {}) {
   return useQuery({
-    queryKey: ['employees'],
-    queryFn: getEmployees,
+    queryKey: ['employees', params.search ?? ''],
+    queryFn: () => getEmployees(params),
   });
 }

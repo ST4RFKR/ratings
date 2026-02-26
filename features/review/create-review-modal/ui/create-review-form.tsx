@@ -32,6 +32,7 @@ interface CreateReviewFormProps {
 interface ReviewComboboxItem {
   id: string;
   label: string;
+  locationId: string | null;
 }
 
 export function CreateReviewForm({ onSuccess, onCancel }: CreateReviewFormProps) {
@@ -44,7 +45,7 @@ export function CreateReviewForm({ onSuccess, onCancel }: CreateReviewFormProps)
     () =>
       (employeesQuery.data ?? [])
         .filter((employee) => employee.status === 'ACTIVE')
-        .map((employee) => ({ id: employee.id, label: employee.fullName })),
+        .map((employee) => ({ id: employee.id, label: employee.fullName, locationId: employee.locationId })),
     [employeesQuery.data],
   );
   const locations = useMemo(
@@ -107,7 +108,23 @@ export function CreateReviewForm({ onSuccess, onCancel }: CreateReviewFormProps)
                 <Combobox<ReviewComboboxItem>
                   items={employees}
                   value={selected}
-                  onValueChange={(item) => field.onChange(item?.id ?? '')}
+                  onValueChange={(item) => {
+                    field.onChange(item?.id ?? '');
+
+                    if (!item) {
+                      return;
+                    }
+
+                    const hasDefaultActiveLocation = locations.some((location) => location.id === item.locationId);
+
+                    if (item.locationId && hasDefaultActiveLocation) {
+                      form.setValue('locationId', item.locationId, {
+                        shouldDirty: true,
+                        shouldTouch: true,
+                        shouldValidate: true,
+                      });
+                    }
+                  }}
                 >
                   <ComboboxInput
                     placeholder={t('fields.employee.placeholder')}

@@ -9,8 +9,21 @@ export interface LocationDto {
   status: 'ACTIVE' | 'PENDING' | 'BLOCKED';
 }
 
-export async function getLocation(): Promise<LocationDto[]> {
-  const response = await apiInstance.get<LocationDto[]>('/locations');
+export interface GetLocationsParams {
+  search?: string;
+}
+
+export async function getLocation(params: GetLocationsParams = {}): Promise<LocationDto[]> {
+  const searchParams = new URLSearchParams();
+
+  if (params.search) {
+    searchParams.set('search', params.search);
+  }
+
+  const query = searchParams.toString();
+  const endpoint = query ? `/locations?${query}` : '/locations';
+
+  const response = await apiInstance.get<LocationDto[]>(endpoint);
 
   return response.data;
 }
