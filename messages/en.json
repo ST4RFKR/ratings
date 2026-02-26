@@ -101,6 +101,38 @@
         "total_reviews": "Total Reviews",
         "top_employee": "Top Performing Employee",
         "last_30_days": "Last 30 days"
+      },
+      "details": {
+        "title_fallback": "Employee",
+        "loading": "Loading employee statistics...",
+        "empty_title": "No reviews yet",
+        "empty_description": "Add reviews for this employee to see analytics and trends.",
+        "kpi": {
+          "average_rating": "Average rating",
+          "total_reviews": "Total reviews",
+          "role": "Role",
+          "no_location": "No location assigned",
+          "from_last_month": "from last month"
+        },
+        "charts": {
+          "trend_title": "Employee Rating Trend",
+          "trend_description": "Monthly reviews and average rating over the last 6 months.",
+          "location_title": "Ratings by Locations",
+          "location_description": "Distribution of this employee reviews by locations.",
+          "latest_title": "Latest Ratings",
+          "latest_description": "Rating changes across the latest 10 reviews.",
+          "criteria_title": "Rating Criteria",
+          "criteria_description": "Radar profile across 5 service quality criteria.",
+          "reviews_label": "Reviews",
+          "average_rating_label": "Average rating",
+          "criteria": {
+            "speed": "Speed",
+            "politeness": "Politeness",
+            "quality": "Quality",
+            "professionalism": "Professionalism",
+            "cleanliness": "Cleanliness"
+          }
+        }
       }
     },
     "reviews": {
@@ -120,7 +152,42 @@
     },
     "stats": {
       "title": "Statistics",
-      "description": "Statistics and analytics"
+      "description": "Statistics and analytics",
+      "loading": "Loading statistics...",
+      "selectors": {
+        "employee": {
+          "label": "Go to employee",
+          "placeholder": "Search employee...",
+          "empty": "No employees found"
+        },
+        "store": {
+          "label": "Go to store",
+          "placeholder": "Search store...",
+          "empty": "No stores found"
+        }
+      },
+      "tabs": {
+        "employees": "By Employees",
+        "locations": "By Locations"
+      },
+      "employees_description": "Employee performance analytics.",
+      "locations_description": "Location performance analytics across your network.",
+      "chart": {
+        "average_rating": "Average rating",
+        "reviews": "Reviews"
+      },
+      "employees": {
+        "rating_chart_title": "Employee Ratings",
+        "rating_chart_description": "Top employees by average rating (from reviews).",
+        "trend_chart_title": "Rating Trend",
+        "trend_chart_description": "Average employee rating over the last 6 months."
+      },
+      "locations": {
+        "reviews_chart_title": "Reviews by Location",
+        "reviews_chart_description": "Top network locations by total reviews.",
+        "trend_chart_title": "Network Reviews Trend",
+        "trend_chart_description": "Total network reviews over the last 6 months."
+      }
     },
     "forms": {
       "location": {

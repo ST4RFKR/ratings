@@ -8,9 +8,27 @@ import { EmployeeRole, EmployeeStatus, PrismaClient, ReviewCategory, UserRole } 
 const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL });
 
 const prisma = new PrismaClient({ adapter });
+const USERS_COUNT = 28;
+const LOCATIONS_COUNT = 6;
+const REVIEWS_COUNT = 420;
+const DAYS_HISTORY = 240;
+
+type RatingAccumulator = {
+  sum: number;
+  count: number;
+};
+
+function toAverage(value: RatingAccumulator) {
+  if (value.count === 0) {
+    return 0;
+  }
+
+  return Number((value.sum / value.count).toFixed(2));
+}
 
 async function main() {
   console.log('🌱 Seeding...');
+  faker.seed(20260226);
 
   // -----------------------
   // cleanup
@@ -28,11 +46,11 @@ async function main() {
   const password = await hash('password123');
 
   const users = await Promise.all(
-    Array.from({ length: 8 }).map(() =>
+    Array.from({ length: USERS_COUNT }).map((_, index) =>
       prisma.user.create({
         data: {
           fullName: faker.person.fullName(),
-          email: faker.internet.email(),
+          email: `user${index + 1}@ratings.local`,
           password,
           role: faker.helpers.arrayElement([UserRole.ADMIN, UserRole.USER]),
           verified: new Date(),
@@ -60,18 +78,20 @@ async function main() {
   // locations
   // -----------------------
   const locations = await Promise.all(
-    Array.from({ length: 2 }).map(() =>
-      prisma.location.create({
+    Array.from({ length: LOCATIONS_COUNT }).map(() => {
+      const locationName = faker.company.name();
+
+      return prisma.location.create({
         data: {
-          name: faker.company.name(),
-          slug: slug(faker.company.name()),
+          name: locationName,
+          slug: slug(locationName),
           address: faker.location.streetAddress(),
           industry: 'Restaurant',
           companyId: company.id,
           status: 'ACTIVE',
         },
-      }),
-    ),
+      });
+    }),
   );
 
   // -----------------------
@@ -112,19 +132,41 @@ async function main() {
   );
 
   const employees = [ownerEmployee, ...otherEmployees];
+  const reviewEmployees = employees.filter((item) => item.locationId);
+  const reviewsStartDate = new Date();
+  reviewsStartDate.setDate(reviewsStartDate.getDate() - DAYS_HISTORY);
+
+  const employeeRatings = new Map<string, RatingAccumulator>();
+  const locationRatings = new Map<string, RatingAccumulator>();
+  const companyRating: RatingAccumulator = { sum: 0, count: 0 };
 
   // -----------------------
   // reviews + scores
   // -----------------------
-  for (let i = 0; i < 20; i++) {
-    const employee = faker.helpers.arrayElement(employees.filter((item) => item.locationId));
+  for (let index = 0; index < REVIEWS_COUNT; index += 1) {
+    const employee = faker.helpers.arrayElement(reviewEmployees);
+    const createdAt = faker.date.between({ from: reviewsStartDate, to: new Date() });
+    createdAt.setHours(
+      faker.number.int({ min: 9, max: 22 }),
+      faker.number.int({ min: 0, max: 59 }),
+      faker.number.int({ min: 0, max: 59 }),
+      0,
+    );
+
+    const speed = faker.number.int({ min: 2, max: 5 });
+    const politeness = faker.number.int({ min: 2, max: 5 });
+    const quality = faker.number.int({ min: 2, max: 5 });
+    const professionalism = faker.number.int({ min: 2, max: 5 });
+    const cleanliness = faker.number.int({ min: 2, max: 5 });
+    const reviewRating = Number(((speed + politeness + quality + professionalism + cleanliness) / 5).toFixed(2));
 
     await prisma.review.create({
       data: {
         employeeId: employee.id,
         companyId: employee.companyId,
         locationId: employee.locationId!,
-        comment: faker.lorem.sentence(),
+        createdAt,
+        comment: faker.datatype.boolean(0.78) ? faker.lorem.sentence() : null,
 
         scores: {
           create: [
@@ -138,13 +180,63 @@ async function main() {
             },
             {
               category: ReviewCategory.QUALITY,
-              value: faker.number.int({ min: 3, max: 5 }),
+              value: quality,
+            },
+            {
+              category: ReviewCategory.PROFESSIONALISM,
+              value: professionalism,
+            },
+            {
+              category: ReviewCategory.CLEANLINESS,
+              value: cleanliness,
             },
           ],
         },
       },
     });
+
+    const employeeAccumulator = employeeRatings.get(employee.id) ?? { sum: 0, count: 0 };
+    employeeAccumulator.sum += reviewRating;
+    employeeAccumulator.count += 1;
+    employeeRatings.set(employee.id, employeeAccumulator);
+
+    const locationAccumulator = locationRatings.get(employee.locationId!) ?? { sum: 0, count: 0 };
+    locationAccumulator.sum += reviewRating;
+    locationAccumulator.count += 1;
+    locationRatings.set(employee.locationId!, locationAccumulator);
+
+    companyRating.sum += reviewRating;
+    companyRating.count += 1;
   }
+
+  for (const employee of reviewEmployees) {
+    const accumulator = employeeRatings.get(employee.id);
+    if (!accumulator) {
+      continue;
+    }
+
+    await prisma.employee.update({
+      where: { id: employee.id },
+      data: { rating: toAverage(accumulator) },
+    });
+  }
+
+  for (const location of locations) {
+    const accumulator = locationRatings.get(location.id);
+    if (!accumulator) {
+      continue;
+    }
+
+    await prisma.location.update({
+      where: { id: location.id },
+      data: { rating: toAverage(accumulator) },
+    });
+  }
+
+  await prisma.company.update({
+    where: { id: company.id },
+    data: { rating: toAverage(companyRating) },
+  });
 
   console.log('✅ Done');
 }

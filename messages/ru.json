@@ -101,6 +101,38 @@
         "total_reviews": "Всего отзывов",
         "top_employee": "Лучший сотрудник",
         "last_30_days": "За последние 30 дней"
+      },
+      "details": {
+        "title_fallback": "Сотрудник",
+        "loading": "Загружаем статистику сотрудника...",
+        "empty_title": "Пока нет оценок",
+        "empty_description": "Добавьте оценки сотруднику, чтобы увидеть графики и динамику.",
+        "kpi": {
+          "average_rating": "Средний рейтинг",
+          "total_reviews": "Всего отзывов",
+          "role": "Роль",
+          "no_location": "Локация не назначена",
+          "from_last_month": "к прошлому месяцу"
+        },
+        "charts": {
+          "trend_title": "Динамика оценок сотрудника",
+          "trend_description": "Отзывы и средний рейтинг по месяцам (последние 6 месяцев).",
+          "location_title": "Оценки по локациям",
+          "location_description": "Распределение отзывов сотрудника по локациям.",
+          "latest_title": "Последние оценки",
+          "latest_description": "Изменение рейтинга в последних 10 отзывах.",
+          "criteria_title": "Критерии оценки",
+          "criteria_description": "Radar-профиль по 5 критериям качества обслуживания.",
+          "reviews_label": "Отзывы",
+          "average_rating_label": "Средний рейтинг",
+          "criteria": {
+            "speed": "Скорость",
+            "politeness": "Вежливость",
+            "quality": "Качество",
+            "professionalism": "Профессионализм",
+            "cleanliness": "Чистота"
+          }
+        }
       }
     },
     "reviews": {
@@ -120,7 +152,42 @@
     },
     "stats": {
       "title": "Статистика",
-      "description": "Статистика и аналитика"
+      "description": "Статистика и аналитика",
+      "loading": "Загружаем статистику...",
+      "selectors": {
+        "employee": {
+          "label": "Перейти к сотруднику",
+          "placeholder": "Найти сотрудника...",
+          "empty": "Сотрудники не найдены"
+        },
+        "store": {
+          "label": "Перейти к магазину",
+          "placeholder": "Найти магазин...",
+          "empty": "Магазины не найдены"
+        }
+      },
+      "tabs": {
+        "employees": "По сотрудникам",
+        "locations": "По локациям"
+      },
+      "employees_description": "Аналитика эффективности сотрудников.",
+      "locations_description": "Аналитика эффективности локаций сети.",
+      "chart": {
+        "average_rating": "Средний рейтинг",
+        "reviews": "Отзывы"
+      },
+      "employees": {
+        "rating_chart_title": "Рейтинг сотрудников",
+        "rating_chart_description": "Топ сотрудников по среднему рейтингу (по отзывам).",
+        "trend_chart_title": "Динамика рейтинга",
+        "trend_chart_description": "Средний рейтинг сотрудников за последние 6 месяцев."
+      },
+      "locations": {
+        "reviews_chart_title": "Отзывы по локациям",
+        "reviews_chart_description": "Топ локаций сети по количеству отзывов.",
+        "trend_chart_title": "Динамика отзывов сети",
+        "trend_chart_description": "Количество отзывов по сети за последние 6 месяцев."
+      }
     },
     "forms": {
       "location": {
