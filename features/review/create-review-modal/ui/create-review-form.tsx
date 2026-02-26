@@ -29,10 +29,15 @@ interface CreateReviewFormProps {
   onCancel?: () => void;
 }
 
-interface ReviewComboboxItem {
+interface ReviewEmployeeComboboxItem {
   id: string;
   label: string;
   locationId: string | null;
+}
+
+interface ReviewLocationComboboxItem {
+  id: string;
+  label: string;
 }
 
 export function CreateReviewForm({ onSuccess, onCancel }: CreateReviewFormProps) {
@@ -105,7 +110,7 @@ export function CreateReviewForm({ onSuccess, onCancel }: CreateReviewFormProps)
               const selected = employees.find((employee) => employee.id === field.value) ?? null;
 
               return (
-                <Combobox<ReviewComboboxItem>
+                <Combobox<ReviewEmployeeComboboxItem>
                   items={employees}
                   value={selected}
                   onValueChange={(item) => {
@@ -166,7 +171,7 @@ export function CreateReviewForm({ onSuccess, onCancel }: CreateReviewFormProps)
               const selected = locations.find((location) => location.id === field.value) ?? null;
 
               return (
-                <Combobox<ReviewComboboxItem>
+                <Combobox<ReviewLocationComboboxItem>
                   items={locations}
                   value={selected}
                   onValueChange={(item) => field.onChange(item?.id ?? '')}
