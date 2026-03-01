@@ -1,8 +1,18 @@
 'use client';
 
 import { useGetEmployeeStats } from '@/features/employee/get-employee-stats';
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/shared/components/ui';
+import { DataTable, DataTableColumnHeader } from '@/shared/components/tables/data-table';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from '@/shared/components/ui';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/components/ui/card';
+import { ColumnDef } from '@tanstack/react-table';
 import { Briefcase, MessageSquare, Star, Target, User } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 import { useParams } from 'next/navigation';
@@ -24,12 +34,34 @@ import {
 
 const LINE_COLOR = 'var(--primary)';
 const FILL_COLOR = 'var(--primary)';
+type EmployeeReviewRow = {
+  id: string;
+  locationName: string;
+  averageRating: number;
+  speed: number;
+  politeness: number;
+  quality: number;
+  professionalism: number;
+  cleanliness: number;
+  comment: string | null;
+  createdAt: string;
+};
 
 function formatMonthLabel(monthKey: string, locale: string) {
   const [year, month] = monthKey.split('-');
   const date = new Date(Number(year), Number(month) - 1, 1);
 
   return date.toLocaleDateString(locale, { month: 'short' });
+}
+
+function formatReviewDate(value: string, locale: string) {
+  return new Date(value).toLocaleDateString(locale, {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
 }
 
 export default function EmployeeDetailPage() {
@@ -62,10 +94,107 @@ export default function EmployeeDetailPage() {
     }));
   }, [statsQuery.data?.criteria, t]);
 
-  const locationData = statsQuery.data?.byLocation ?? [];
   const employee = statsQuery.data?.employee;
   const totalReviews = statsQuery.data?.kpi.totalReviews ?? 0;
   const averageRating = statsQuery.data?.kpi.averageRating ?? 0;
+  const reviewRows = useMemo<EmployeeReviewRow[]>(() => {
+    return (statsQuery.data?.reviews ?? []).map((review) => ({
+      id: review.id,
+      locationName: review.locationName,
+      averageRating: review.averageRating,
+      speed: review.scores.speed,
+      politeness: review.scores.politeness,
+      quality: review.scores.quality,
+      professionalism: review.scores.professionalism,
+      cleanliness: review.scores.cleanliness,
+      comment: review.comment,
+      createdAt: review.createdAt,
+    }));
+  }, [statsQuery.data?.reviews]);
+  const reviewColumns = useMemo<ColumnDef<EmployeeReviewRow>[]>(
+    () => [
+      {
+        accessorKey: 'locationName',
+        header: ({ column }) => (
+          <DataTableColumnHeader
+            column={column}
+            title='Store'
+          />
+        ),
+      },
+      {
+        accessorKey: 'averageRating',
+        header: ({ column }) => (
+          <DataTableColumnHeader
+            column={column}
+            title='Rating'
+          />
+        ),
+        cell: ({ row }) => row.original.averageRating.toFixed(2),
+      },
+      {
+        accessorKey: 'speed',
+        header: ({ column }) => (
+          <DataTableColumnHeader
+            column={column}
+            title={t('details.charts.criteria.speed')}
+          />
+        ),
+      },
+      {
+        accessorKey: 'politeness',
+        header: ({ column }) => (
+          <DataTableColumnHeader
+            column={column}
+            title={t('details.charts.criteria.politeness')}
+          />
+        ),
+      },
+      {
+        accessorKey: 'quality',
+        header: ({ column }) => (
+          <DataTableColumnHeader
+            column={column}
+            title={t('details.charts.criteria.quality')}
+          />
+        ),
+      },
+      {
+        accessorKey: 'professionalism',
+        header: ({ column }) => (
+          <DataTableColumnHeader
+            column={column}
+            title={t('details.charts.criteria.professionalism')}
+          />
+        ),
+      },
+      {
+        accessorKey: 'cleanliness',
+        header: ({ column }) => (
+          <DataTableColumnHeader
+            column={column}
+            title={t('details.charts.criteria.cleanliness')}
+          />
+        ),
+      },
+      {
+        accessorKey: 'comment',
+        header: 'Comment',
+        cell: ({ row }) => row.original.comment ?? '-',
+      },
+      {
+        accessorKey: 'createdAt',
+        header: ({ column }) => (
+          <DataTableColumnHeader
+            column={column}
+            title='Date'
+          />
+        ),
+        cell: ({ row }) => formatReviewDate(row.original.createdAt, locale),
+      },
+    ],
+    [locale, t],
+  );
 
   return (
     <div className='flex flex-1 flex-col gap-4 p-4'>
@@ -111,6 +240,29 @@ export default function EmployeeDetailPage() {
           </CardContent>
         </Card>
       </div>
+
+      <Card className='shadow-none'>
+        <CardContent className='pt-4'>
+          <Accordion
+            type='single'
+            collapsible
+            defaultValue='location-scores'
+          >
+            <AccordionItem value='location-scores'>
+              <AccordionTrigger className='py-2 text-base'>
+                {t('details.kpi.total_reviews')} ({totalReviews})
+              </AccordionTrigger>
+              <AccordionContent className='pb-0'>
+                <DataTable
+                  columns={reviewColumns}
+                  data={reviewRows}
+                  showFilter={false}
+                />
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
+        </CardContent>
+      </Card>
 
       <div className='grid grid-cols-1 gap-4 xl:grid-cols-2'>
         <Card className='shadow-none'>

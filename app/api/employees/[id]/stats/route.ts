@@ -11,6 +11,26 @@ function monthKey(date: Date) {
   return `${date.getFullYear()}-${`${date.getMonth() + 1}`.padStart(2, '0')}`;
 }
 
+function createScoreAccumulator() {
+  return {
+    SPEED: { sum: 0, count: 0 },
+    POLITENESS: { sum: 0, count: 0 },
+    QUALITY: { sum: 0, count: 0 },
+    PROFESSIONALISM: { sum: 0, count: 0 },
+    CLEANLINESS: { sum: 0, count: 0 },
+  } satisfies Record<ScoreCategory, { sum: number; count: number }>;
+}
+
+function createReviewScoreMap() {
+  return {
+    speed: 0,
+    politeness: 0,
+    quality: 0,
+    professionalism: 0,
+    cleanliness: 0,
+  };
+}
+
 export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   return withApiGuard<{ id: string }>(
     async ({ companyId, params }) => {
@@ -43,6 +63,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
           },
           select: {
             id: true,
+            comment: true,
             createdAt: true,
             location: {
               select: {
@@ -84,14 +105,16 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
         });
         const monthlyMap = new Map(monthlyTemplate.map((item) => [item.key, item]));
 
-        const locationMap = new Map<string, { label: string; reviews: number; totalRating: number }>();
-        const scoreAccumulator: Record<ScoreCategory, { sum: number; count: number }> = {
-          SPEED: { sum: 0, count: 0 },
-          POLITENESS: { sum: 0, count: 0 },
-          QUALITY: { sum: 0, count: 0 },
-          PROFESSIONALISM: { sum: 0, count: 0 },
-          CLEANLINESS: { sum: 0, count: 0 },
-        };
+        const locationMap = new Map<
+          string,
+          {
+            label: string;
+            reviews: number;
+            totalRating: number;
+            criteria: Record<ScoreCategory, { sum: number; count: number }>;
+          }
+        >();
+        const scoreAccumulator = createScoreAccumulator();
 
         const recentRatings = reviews
           .slice(0, 12)
@@ -106,6 +129,31 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
               rating: avg,
             };
           });
+
+        const reviewRows = reviews.map((review) => {
+          const scores = createReviewScoreMap();
+
+          for (const score of review.scores) {
+            if (score.category === 'SPEED') scores.speed = score.value;
+            if (score.category === 'POLITENESS') scores.politeness = score.value;
+            if (score.category === 'QUALITY') scores.quality = score.value;
+            if (score.category === 'PROFESSIONALISM') scores.professionalism = score.value;
+            if (score.category === 'CLEANLINESS') scores.cleanliness = score.value;
+          }
+
+          const average = review.scores.length
+            ? Number((review.scores.reduce((sum, score) => sum + score.value, 0) / review.scores.length).toFixed(2))
+            : 0;
+
+          return {
+            id: review.id,
+            locationName: review.location.name,
+            comment: review.comment,
+            createdAt: review.createdAt.toISOString(),
+            averageRating: average,
+            scores,
+          };
+        });
 
         for (const review of reviews) {
           const reviewAverage = review.scores.length
@@ -122,17 +170,19 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
             label: review.location.name,
             reviews: 0,
             totalRating: 0,
+            criteria: createScoreAccumulator(),
           };
-          locationMap.set(review.location.id, {
-            label: locationCurrent.label,
-            reviews: locationCurrent.reviews + 1,
-            totalRating: locationCurrent.totalRating + reviewAverage,
-          });
+
+          locationCurrent.reviews += 1;
+          locationCurrent.totalRating += reviewAverage;
+          locationMap.set(review.location.id, locationCurrent);
 
           for (const score of review.scores) {
             const category = score.category as ScoreCategory;
             scoreAccumulator[category].sum += score.value;
             scoreAccumulator[category].count += 1;
+            locationCurrent.criteria[category].sum += score.value;
+            locationCurrent.criteria[category].count += 1;
           }
         }
 
@@ -147,6 +197,12 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
             label: item.label,
             reviews: item.reviews,
             averageRating: Number((item.totalRating / item.reviews).toFixed(2)),
+            criteria: RADAR_ORDER.map((category) => ({
+              category,
+              value: item.criteria[category].count
+                ? Number((item.criteria[category].sum / item.criteria[category].count).toFixed(2))
+                : 0,
+            })),
           }))
           .sort((a, b) => b.reviews - a.reviews);
 
@@ -169,6 +225,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
               totalReviews,
               averageRating,
             },
+            reviews: reviewRows,
             monthlyTrend,
             byLocation,
             recentRatings,
