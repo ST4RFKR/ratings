@@ -38,7 +38,46 @@
       "total_reviews": "Total Reviews",
       "active_stores": "Active Stores",
       "total_employees": "Total Employees",
-      "last-7-days": "Last 7 days"
+      "last-7-days": "Last 7 days",
+      "invite_code": "Invite code",
+      "not_available": "N/A",
+      "error": "Failed to load dashboard data. Please refresh the page.",
+      "kpi": {
+        "review_period_short": "7d",
+        "average_short": "avg",
+        "live_short": "live",
+        "team_short": "team"
+      },
+      "review_wave": {
+        "title": "Review wave"
+      },
+      "rating_distribution": {
+        "title": "Rating distribution",
+        "description": "Built from real review ratings",
+        "buckets": {
+          "five": "5 stars",
+          "four": "4 stars",
+          "three": "3 stars",
+          "two": "2 stars",
+          "one": "1 star"
+        }
+      },
+      "team_watchlist": {
+        "title": "Team watchlist",
+        "description": "Employees needing attention first",
+        "alerts": "alerts",
+        "stable": "stable",
+        "empty": "No employees yet."
+      },
+      "location_pulse": {
+        "title": "Location pulse",
+        "description": "Current state by location from live company data",
+        "realtime": "Realtime board",
+        "rating": "Rating",
+        "reviews": "Reviews",
+        "active_employees": "Active employees",
+        "empty": "No locations yet."
+      }
     },
     "breadcrumbs": {
       "dashboard": "Dashboard",

@@ -26,6 +26,19 @@ export type LocationStatsDto = {
       cleanliness: number;
     };
   }>;
+  criteria: Array<{
+    category: 'SPEED' | 'POLITENESS' | 'QUALITY' | 'PROFESSIONALISM' | 'CLEANLINESS';
+    value: number;
+  }>;
+  monthlyTrend: Array<{
+    key: string;
+    reviews: number;
+    averageRating: number;
+  }>;
+  recentRatings: Array<{
+    label: string;
+    rating: number;
+  }>;
 };
 
 export async function getLocationStats(locationSlug: string): Promise<LocationStatsDto> {

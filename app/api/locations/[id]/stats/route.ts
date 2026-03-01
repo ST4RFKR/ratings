@@ -4,6 +4,21 @@ import { withApiGuard } from '@/shared/lib/server/with-api-guard';
 import { NextRequest, NextResponse } from 'next/server';
 
 type ScoreCategory = 'SPEED' | 'POLITENESS' | 'QUALITY' | 'PROFESSIONALISM' | 'CLEANLINESS';
+const RADAR_ORDER: ScoreCategory[] = ['SPEED', 'POLITENESS', 'QUALITY', 'PROFESSIONALISM', 'CLEANLINESS'];
+
+function monthKey(date: Date) {
+  return `${date.getFullYear()}-${`${date.getMonth() + 1}`.padStart(2, '0')}`;
+}
+
+function createScoreAccumulator() {
+  return {
+    SPEED: { sum: 0, count: 0 },
+    POLITENESS: { sum: 0, count: 0 },
+    QUALITY: { sum: 0, count: 0 },
+    PROFESSIONALISM: { sum: 0, count: 0 },
+    CLEANLINESS: { sum: 0, count: 0 },
+  } satisfies Record<ScoreCategory, { sum: number; count: number }>;
+}
 
 function createReviewScoreMap() {
   return {
@@ -73,6 +88,17 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
           return sum + avg;
         }, 0);
         const averageRating = totalReviews ? Number((totalRatingsSum / totalReviews).toFixed(2)) : 0;
+        const scoreAccumulator = createScoreAccumulator();
+        const now = new Date();
+        const monthlyTemplate = Array.from({ length: 6 }).map((_, index) => {
+          const date = new Date(now.getFullYear(), now.getMonth() - (5 - index), 1);
+          return {
+            key: monthKey(date),
+            reviews: 0,
+            totalRating: 0,
+          };
+        });
+        const monthlyMap = new Map(monthlyTemplate.map((item) => [item.key, item]));
 
         const reviewRows = reviews.map((review) => {
           const scores = createReviewScoreMap();
@@ -101,6 +127,51 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
           };
         });
 
+        const recentRatings = reviews
+          .slice(0, 12)
+          .reverse()
+          .map((review) => {
+            const avg = review.scores.length
+              ? Number((review.scores.reduce((acc, score) => acc + score.value, 0) / review.scores.length).toFixed(2))
+              : 0;
+
+            return {
+              label: review.createdAt.toISOString(),
+              rating: avg,
+            };
+          });
+
+        for (const review of reviews) {
+          const reviewAverage = review.scores.length
+            ? review.scores.reduce((sum, score) => sum + score.value, 0) / review.scores.length
+            : 0;
+
+          const month = monthlyMap.get(monthKey(review.createdAt));
+          if (month) {
+            month.reviews += 1;
+            month.totalRating += reviewAverage;
+          }
+
+          for (const score of review.scores) {
+            const category = score.category as ScoreCategory;
+            scoreAccumulator[category].sum += score.value;
+            scoreAccumulator[category].count += 1;
+          }
+        }
+
+        const monthlyTrend = monthlyTemplate.map((item) => ({
+          key: item.key,
+          reviews: item.reviews,
+          averageRating: item.reviews ? Number((item.totalRating / item.reviews).toFixed(2)) : 0,
+        }));
+
+        const criteria = RADAR_ORDER.map((category) => ({
+          category,
+          value: scoreAccumulator[category].count
+            ? Number((scoreAccumulator[category].sum / scoreAccumulator[category].count).toFixed(2))
+            : 0,
+        }));
+
         return NextResponse.json(
           {
             location,
@@ -109,6 +180,9 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
               averageRating,
             },
             reviews: reviewRows,
+            monthlyTrend,
+            recentRatings,
+            criteria,
           },
           { status: 200 },
         );
