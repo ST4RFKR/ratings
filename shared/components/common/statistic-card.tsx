@@ -1,7 +1,7 @@
 'use client';
 import { Badge, Card, CardContent, Separator } from '@/shared/components/ui';
 import { cn } from '@/shared/lib';
-import { MessageSquare, Star, Store, TrendingUp, Users } from 'lucide-react';
+import { MapPin, MessageSquare, Star, TrendingUp, Users } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 export const StatisticsCard = () => {
@@ -35,10 +35,10 @@ export const StatisticsCard = () => {
       statusIcon: <TrendingUp />,
     },
     {
-      title: t('active_stores'),
+      title: t('active_locations'),
       subtitle: '42',
       cardIcon: (
-        <Store
+        <MapPin
           width={14}
           height={14}
         />

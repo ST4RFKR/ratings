@@ -1,13 +1,13 @@
-'use client';
+﻿'use client';
 
 import { CreateLocationModal } from '@/features/location/create-location-modal';
 import { useGetLocation } from '@/features/location/get-location/model/use-get-location';
 import { SearchInput } from '@/shared/components/common/search-input';
 import { DashboardAnalyticCard } from '@/shared/components/common/sidebar/dashboard-analytic-card';
 import { DataTable } from '@/shared/components/tables/data-table';
-import { columnsStores, type LocationTableRow } from '@/shared/components/tables/stores/columns';
+import { columnsLocations, type LocationTableRow } from '@/shared/components/tables/locations/columns';
 import { Button } from '@/shared/components/ui/button';
-import { Award, Plus, Star, Store, Users } from 'lucide-react';
+import { Award, MapPin, Plus, Star, Users } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useMemo, useState } from 'react';
 
@@ -19,9 +19,9 @@ function mapLocationStatus(status: 'ACTIVE' | 'PENDING' | 'BLOCKED'): 'active' |
   return 'inactive';
 }
 
-export default function StoresPage() {
-  const t = useTranslations('dashboard.stores');
-  const a = useTranslations('dashboard.stores.analytics');
+export default function LocationsPage() {
+  const t = useTranslations('dashboard.locations');
+  const a = useTranslations('dashboard.locations.analytics');
   const [search, setSearch] = useState('');
   const locationsQuery = useGetLocation({ search });
 
@@ -64,8 +64,8 @@ export default function StoresPage() {
       icon: <Users className='h-4 w-4' />,
     },
     {
-      title: a('top_store'),
-      description: 'Store Central',
+      title: a('top_location'),
+      description: 'Central Location',
       metrics: [
         {
           label: a('avg_rating'),
@@ -82,7 +82,7 @@ export default function StoresPage() {
     <div className='flex flex-1 flex-col gap-4 p-4'>
       <div className='flex items-center justify-between gap-3'>
         <div className='flex items-center gap-3'>
-          <Store className='h-6 w-6' />
+          <MapPin className='h-6 w-6' />
           <h1 className='text-2xl font-semibold'>{t('title')}</h1>
         </div>
         <div className='flex items-center gap-3'>
@@ -112,7 +112,7 @@ export default function StoresPage() {
 
       <div className='mt-6'>
         <DataTable
-          columns={columnsStores}
+          columns={columnsLocations}
           data={locations}
           showFilter={false}
         />
@@ -120,3 +120,4 @@ export default function StoresPage() {
     </div>
   );
 }
+

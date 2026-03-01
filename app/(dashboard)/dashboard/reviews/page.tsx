@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useGetEmployees } from '@/features/employee/get-employes';
 import { useGetLocation } from '@/features/location/get-location/model/use-get-location';
@@ -9,7 +9,7 @@ import { DataTable } from '@/shared/components/tables/data-table';
 import { columnsReviews, type ReviewTableRow } from '@/shared/components/tables/reviews/columns';
 import { Button, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/components/ui';
 import { ROUTES } from '@/shared/config';
-import { MessageSquare, Plus, Star, Store, Users } from 'lucide-react';
+import { MapPin, MessageSquare, Plus, Star, Users } from 'lucide-react';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { useMemo, useState } from 'react';
@@ -125,11 +125,11 @@ export default function ReviewsPage() {
           onValueChange={setLocationId}
         >
           <SelectTrigger className='w-full md:w-[260px]'>
-            <Store className='text-muted-foreground mr-2 h-4 w-4' />
-            <SelectValue placeholder={t('filters.store')} />
+            <MapPin className='text-muted-foreground mr-2 h-4 w-4' />
+            <SelectValue placeholder={t('filters.location')} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value='all'>{t('filters.all_stores')}</SelectItem>
+            <SelectItem value='all'>{t('filters.all_locations')}</SelectItem>
             {(locationsQuery.data ?? []).map((location) => (
               <SelectItem
                 key={location.id}
@@ -173,3 +173,4 @@ export default function ReviewsPage() {
     </div>
   );
 }
+

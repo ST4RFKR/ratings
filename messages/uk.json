@@ -11,32 +11,31 @@
     "nav": {
       "dashboard": "Панель",
       "companies": "Компанії",
-      "stores": "Магазини",
       "employees": "Працівники",
       "about-us": "Про нас",
       "services": "Послуги",
       "work": "Робота",
       "team": "Команда",
       "pricing": "Ціни",
-      "awards": "Нагороди"
+      "awards": "Нагороди",
+      "locations": "Локації"
     },
     "login": "Вхід"
   },
   "dashboard": {
     "nav": {
       "dashboard": "Дашборд",
-      "stores": "Магазини",
       "employees": "Співробітники",
       "reviews": "Оцінки",
       "new-review": "Додати оцінку",
-      "stats": "Статистика"
+      "stats": "Статистика",
+      "locations": "Локації"
     },
     "main": {
       "title": "Дашборд",
       "description": "Вітаємо на дашборді",
       "avg_rating": "Ср. рейтинг",
       "total_reviews": "Всього відгуків",
-      "active_stores": "Активні магазини",
       "total_employees": "Всього співробітників",
       "last-7-days": "За останні 7 днів",
       "invite_code": "Код запрошення",
@@ -77,15 +76,16 @@
         "reviews": "Відгуки",
         "active_employees": "Активні співробітники",
         "empty": "Поки немає локацій."
-      }
+      },
+      "active_locations": "Активні локації"
     },
     "breadcrumbs": {
       "dashboard": "Дашборд",
-      "stores": "Магазини",
       "employees": "Співробітники",
       "reviews": "Оцінки",
       "new": "Додати",
-      "stats": "Статистика"
+      "stats": "Статистика",
+      "locations": "Локації"
     },
     "user-nav": {
       "profile": "Профіль",
@@ -96,28 +96,6 @@
       "confirm-logout-description": "Ви впевнені, що хочете завершити сесію?",
       "confirm-logout-cancel": "Скасувати",
       "confirm-logout-action": "Вийти"
-    },
-    "stores": {
-      "title": "Магазини",
-      "description": "Список усіх магазинів",
-      "search": "Пошук магазинів...",
-      "actions": {
-        "add_location": "Додати локацію"
-      },
-      "table": {
-        "name": "Назва",
-        "rating": "Рейтинг",
-        "reviews": "Відгуки",
-        "actions": "Дії",
-        "view": "Переглянути",
-        "edit": "Редагувати"
-      },
-      "analytics": {
-        "avg_rating": "Ср. рейтинг",
-        "total_reviews": "Всього відгуків",
-        "top_store": "Найкращий магазин",
-        "last_30_days": "За останні 30 днів"
-      }
     },
     "employees": {
       "title": "Співробітники",
@@ -183,10 +161,10 @@
       },
       "search": "Пошук за співробітником...",
       "filters": {
-        "store": "Магазин",
         "employee": "Співробітник",
-        "all_stores": "Усі магазини",
-        "all_employees": "Усі співробітники"
+        "all_employees": "Усі співробітники",
+        "location": "Локація",
+        "all_locations": "Усі локації"
       }
     },
     "stats": {
@@ -199,10 +177,10 @@
           "placeholder": "Знайти співробітника...",
           "empty": "Співробітників не знайдено"
         },
-        "store": {
-          "label": "Перейти до магазину",
-          "placeholder": "Знайти магазин...",
-          "empty": "Магазини не знайдено"
+        "location": {
+          "label": "Перейти до локації",
+          "placeholder": "Знайти локацію...",
+          "empty": "Локації не знайдено"
         }
       },
       "tabs": {
@@ -366,6 +344,28 @@
           "create": "Створити оцінку",
           "create_loading": "Створення..."
         }
+      }
+    },
+    "locations": {
+      "title": "Локації",
+      "description": "Список усіх локацій",
+      "search": "Пошук локацій...",
+      "actions": {
+        "add_location": "Додати локацію"
+      },
+      "table": {
+        "name": "Назва",
+        "rating": "Рейтинг",
+        "reviews": "Відгуки",
+        "actions": "Дії",
+        "view": "Переглянути",
+        "edit": "Редагувати"
+      },
+      "analytics": {
+        "avg_rating": "Ср. рейтинг",
+        "total_reviews": "Всього відгуків",
+        "last_30_days": "За останні 30 днів",
+        "top_location": "Найкраща локація"
       }
     }
   },

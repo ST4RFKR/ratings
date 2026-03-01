@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useGetEmployeeStats } from '@/features/employee/get-employee-stats';
 import { DataTable, DataTableColumnHeader } from '@/shared/components/tables/data-table';
@@ -118,7 +118,7 @@ export default function EmployeeDetailPage() {
         header: ({ column }) => (
           <DataTableColumnHeader
             column={column}
-            title='Store'
+            title='Location'
           />
         ),
       },
@@ -426,3 +426,4 @@ export default function EmployeeDetailPage() {
     </div>
   );
 }
+

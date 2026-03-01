@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useGetLocationStats } from '@/features/location/get-location-stats';
 import { DataTable, DataTableColumnHeader } from '@/shared/components/tables/data-table';
@@ -13,7 +13,7 @@ import {
 } from '@/shared/components/ui';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/components/ui/card';
 import { ColumnDef } from '@tanstack/react-table';
-import { MapPin, MessageSquare, Star, Store, Target } from 'lucide-react';
+import { MapPin, MessageSquare, Star, Target } from 'lucide-react';
 import { useLocale } from 'next-intl';
 import { useParams } from 'next/navigation';
 import { useMemo } from 'react';
@@ -35,7 +35,7 @@ import {
 const LINE_COLOR = 'var(--primary)';
 const FILL_COLOR = 'var(--primary)';
 
-type StoreReviewRow = {
+type LocationReviewRow = {
   id: string;
   employeeName: string;
   averageRating: number;
@@ -65,7 +65,7 @@ function formatReviewDate(value: string, locale: string) {
   });
 }
 
-export default function StoreDetailPage() {
+export default function LocationDetailPage() {
   const locale = useLocale();
   const params = useParams<{ id: string }>();
   const locationSlug = Array.isArray(params.id) ? params.id[0] : params.id;
@@ -106,7 +106,7 @@ export default function StoreDetailPage() {
     }));
   }, [statsQuery.data?.criteria]);
 
-  const reviewRows = useMemo<StoreReviewRow[]>(() => {
+  const reviewRows = useMemo<LocationReviewRow[]>(() => {
     return (statsQuery.data?.reviews ?? []).map((review) => ({
       id: review.id,
       employeeName: review.employeeName,
@@ -121,7 +121,7 @@ export default function StoreDetailPage() {
     }));
   }, [statsQuery.data?.reviews]);
 
-  const reviewColumns = useMemo<ColumnDef<StoreReviewRow>[]>(
+  const reviewColumns = useMemo<ColumnDef<LocationReviewRow>[]>(
     () => [
       {
         accessorKey: 'employeeName',
@@ -209,11 +209,11 @@ export default function StoreDetailPage() {
   return (
     <div className='flex flex-1 flex-col gap-4 p-4'>
       <div className='flex items-center gap-3'>
-        <Store className='h-6 w-6' />
-        <h1 className='text-2xl font-semibold'>{location?.name ?? 'Store details'}</h1>
+        <MapPin className='h-6 w-6' />
+        <h1 className='text-2xl font-semibold'>{location?.name ?? 'Location details'}</h1>
       </div>
 
-      {statsQuery.isLoading ? <p className='text-sm text-muted-foreground'>Loading store stats...</p> : null}
+      {statsQuery.isLoading ? <p className='text-sm text-muted-foreground'>Loading location stats...</p> : null}
       {statsQuery.isError ? (
         <p className='text-sm text-destructive'>{(statsQuery.error as Error)?.message ?? 'Failed to load stats'}</p>
       ) : null}
@@ -254,9 +254,9 @@ export default function StoreDetailPage() {
           <Accordion
             type='single'
             collapsible
-            defaultValue='store-reviews'
+            defaultValue='location-reviews'
           >
-            <AccordionItem value='store-reviews'>
+            <AccordionItem value='location-reviews'>
               <AccordionTrigger className='py-2 text-base'>Employee Reviews ({totalReviews})</AccordionTrigger>
               <AccordionContent className='pb-0'>
                 <DataTable
@@ -273,7 +273,7 @@ export default function StoreDetailPage() {
       <div className='grid grid-cols-1 gap-4 xl:grid-cols-2'>
         <Card className='shadow-none'>
           <CardHeader>
-            <CardTitle>Store Rating Trend</CardTitle>
+            <CardTitle>Location Rating Trend</CardTitle>
             <CardDescription>Monthly reviews and average rating over the last 6 months.</CardDescription>
           </CardHeader>
           <CardContent>
@@ -425,10 +425,11 @@ export default function StoreDetailPage() {
         <Card className='shadow-none'>
           <CardHeader>
             <CardTitle>No reviews yet</CardTitle>
-            <CardDescription>Add reviews for this store to see analytics and trends.</CardDescription>
+            <CardDescription>Add reviews for this location to see analytics and trends.</CardDescription>
           </CardHeader>
         </Card>
       ) : null}
     </div>
   );
 }
+

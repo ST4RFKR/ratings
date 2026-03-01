@@ -6,29 +6,13 @@ import { useGetLocation } from '@/features/location/get-location/model/use-get-l
 import { useGetReviews } from '@/features/review/get-reviews';
 import { JoinCodeBadge } from '@/shared/components/common/join-code-badge';
 import { Badge, Card, ChartContainer, ChartTooltip, ChartTooltipContent, Skeleton } from '@/shared/components/ui';
-import {
-  AlertTriangle,
-  CircleDotDashed,
-  LayoutDashboard,
-  MapPin,
-  MessageSquareMore,
-  Sparkles,
-  Star,
-  TrendingUp,
-  Users,
-} from 'lucide-react';
+import { CircleDotDashed, LayoutDashboard, MapPin, MessageSquareMore, Star, TrendingUp, Trophy, Users } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 import { useSession } from 'next-auth/react';
 import { useMemo } from 'react';
 import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from 'recharts';
 
 const REVIEW_WAVE_COLOR = 'var(--primary)';
-
-function getDeltaTone(value: number) {
-  return value >= 0
-    ? 'text-emerald-700 bg-emerald-500/10 dark:text-emerald-400'
-    : 'text-amber-700 bg-amber-500/10 dark:text-amber-400';
-}
 
 function toDayKey(date: Date) {
   const y = date.getFullYear();
@@ -41,12 +25,25 @@ function toPercent(value: number) {
   return `${value >= 0 ? '+' : ''}${value.toFixed(1)}%`;
 }
 
+function toSharePercent(value: number) {
+  return `${value.toFixed(1)}%`;
+}
+
 function startOfDay(date: Date) {
   return new Date(date.getFullYear(), date.getMonth(), date.getDate());
 }
 
+function getAverage(values: number[]) {
+  if (values.length === 0) {
+    return 0;
+  }
+
+  return Number((values.reduce((sum, value) => sum + value, 0) / values.length).toFixed(2));
+}
+
 export default function Page() {
   const t = useTranslations('dashboard.main');
+  const td = useTranslations('dashboard');
   const locale = useLocale();
   const session = useSession();
   const reviewsQuery = useGetReviews({});
@@ -68,26 +65,27 @@ export default function Page() {
   const {
     reviewWave,
     categoryStats,
-    locationPulse,
-    teamWatch,
     totalReviews,
-    averageRating,
+    avgLocationRating,
+    avgEmployeeRating,
     activeLocations,
     activeEmployees,
     reviewsDeltaPercent,
+    bestLocation,
+    bestEmployee,
   } = useMemo(() => {
     const reviews = reviewsQuery.data ?? [];
     const employees = employeesQuery.data ?? [];
     const locations = locationsQuery.data ?? [];
 
     const totalReviewsCount = reviews.length;
-    const avgRating =
-      totalReviewsCount > 0
-        ? Number((reviews.reduce((sum, review) => sum + review.rating, 0) / totalReviewsCount).toFixed(2))
-        : 0;
+    const activeLocationItems = locations.filter((item) => item.status === 'ACTIVE');
+    const activeEmployeeItems = employees.filter((item) => item.status === 'ACTIVE');
+    const activeLocationsCount = activeLocationItems.length;
+    const activeEmployeesCount = activeEmployeeItems.length;
 
-    const activeLocationsCount = locations.filter((item) => item.status === 'ACTIVE').length;
-    const activeEmployeesCount = employees.filter((item) => item.status === 'ACTIVE').length;
+    const averageLocationRating = getAverage(activeLocationItems.map((item) => item.rating));
+    const averageEmployeeRating = getAverage(activeEmployeeItems.map((item) => item.rating));
 
     const today = startOfDay(new Date());
     const dayMs = 1000 * 60 * 60 * 24;
@@ -147,53 +145,49 @@ export default function Page() {
           ? 100
           : 0;
 
-    const pulse = locations
-      .map((location) => {
-        const locationEmployees = employees.filter((employee) => employee.locationId === location.id);
-        const locationActiveEmployees = locationEmployees.filter((employee) => employee.status === 'ACTIVE').length;
-        return {
+    const bestLocationByReviews =
+      locations
+        .map((location) => ({
+          id: location.id,
           name: location.name,
           rating: Number(location.rating.toFixed(2)),
           reviews: locationReviewsMap.get(location.id) ?? 0,
-          activeEmployees: locationActiveEmployees,
-        };
-      })
-      .sort((a, b) => b.reviews - a.reviews)
-      .slice(0, 3);
+        }))
+        .sort((a, b) => b.reviews - a.reviews || b.rating - a.rating)[0] ?? null;
 
-    const watch = employees
-      .map((employee) => {
-        let alerts = 0;
-        if (employee.rating < 4) alerts += 1;
-        if (employee.status !== 'ACTIVE') alerts += 1;
-        if (employee._count.reviews < 3) alerts += 1;
-        return {
+    const bestEmployeeByReviews =
+      employees
+        .map((employee) => ({
+          id: employee.id,
           name: employee.fullName,
           role: employee.role,
           rating: Number(employee.rating.toFixed(2)),
-          alerts,
-        };
-      })
-      .sort((a, b) => b.alerts - a.alerts || a.rating - b.rating)
-      .slice(0, 4);
+          reviews: employee._count.reviews,
+        }))
+        .sort((a, b) => b.reviews - a.reviews || b.rating - a.rating)[0] ?? null;
 
-    const maxBucketCount = Math.max(1, ...ratingBuckets.map((item) => item.count));
-    const bucketStats = ratingBuckets.map((item) => ({
-      label: item.label,
-      score: Math.round((item.count / maxBucketCount) * 100),
-      delta: toPercent(reviewsDelta),
-    }));
+    const bucketStats = ratingBuckets.map((item) => {
+      const sharePercent = totalReviewsCount > 0 ? (item.count / totalReviewsCount) * 100 : 0;
+
+      return {
+        label: item.label,
+        count: item.count,
+        sharePercent,
+        shareLabel: toSharePercent(sharePercent),
+      };
+    });
 
     return {
       reviewWave: dailyTemplate,
       categoryStats: bucketStats,
-      locationPulse: pulse,
-      teamWatch: watch,
       totalReviews: totalReviewsCount,
-      averageRating: avgRating,
+      avgLocationRating: averageLocationRating,
+      avgEmployeeRating: averageEmployeeRating,
       activeLocations: activeLocationsCount,
       activeEmployees: activeEmployeesCount,
       reviewsDeltaPercent: reviewsDelta,
+      bestLocation: bestLocationByReviews,
+      bestEmployee: bestEmployeeByReviews,
     };
   }, [employeesQuery.data, locale, locationsQuery.data, reviewsQuery.data, t]);
 
@@ -224,7 +218,7 @@ export default function Page() {
             </div>
           </div>
 
-          <div className='grid gap-2 sm:grid-cols-2 xl:grid-cols-4'>
+          <div className='grid gap-2 sm:grid-cols-2 xl:grid-cols-5'>
             <div className='rounded-xl border border-border/60 bg-background/70 p-3'>
               <div className='mb-2 flex items-center justify-between text-muted-foreground'>
                 <MessageSquareMore className='h-4 w-4' />
@@ -233,6 +227,7 @@ export default function Page() {
               {isLoading ? <Skeleton className='h-7 w-14' /> : <div className='text-xl font-semibold'>{totalReviews}</div>}
               <div className='text-xs text-muted-foreground'>{t('total_reviews')}</div>
             </div>
+
             <div className='rounded-xl border border-border/60 bg-background/70 p-3'>
               <div className='mb-2 flex items-center justify-between text-muted-foreground'>
                 <Star className='h-4 w-4' />
@@ -241,18 +236,33 @@ export default function Page() {
               {isLoading ? (
                 <Skeleton className='h-7 w-16' />
               ) : (
-                <div className='text-xl font-semibold'>{averageRating.toFixed(2)}</div>
+                <div className='text-xl font-semibold'>{avgLocationRating.toFixed(2)}</div>
               )}
-              <div className='text-xs text-muted-foreground'>{t('avg_rating')}</div>
+              <div className='text-xs text-muted-foreground'>{`${t('avg_rating')} (${td('nav.locations')})`}</div>
             </div>
+
+            <div className='rounded-xl border border-border/60 bg-background/70 p-3'>
+              <div className='mb-2 flex items-center justify-between text-muted-foreground'>
+                <Star className='h-4 w-4' />
+                <span className='text-xs'>{t('kpi.average_short')}</span>
+              </div>
+              {isLoading ? (
+                <Skeleton className='h-7 w-16' />
+              ) : (
+                <div className='text-xl font-semibold'>{avgEmployeeRating.toFixed(2)}</div>
+              )}
+              <div className='text-xs text-muted-foreground'>{`${t('avg_rating')} (${td('nav.employees')})`}</div>
+            </div>
+
             <div className='rounded-xl border border-border/60 bg-background/70 p-3'>
               <div className='mb-2 flex items-center justify-between text-muted-foreground'>
                 <MapPin className='h-4 w-4' />
                 <span className='text-xs'>{t('kpi.live_short')}</span>
               </div>
               {isLoading ? <Skeleton className='h-7 w-12' /> : <div className='text-xl font-semibold'>{activeLocations}</div>}
-              <div className='text-xs text-muted-foreground'>{t('active_stores')}</div>
+              <div className='text-xs text-muted-foreground'>{t('active_locations')}</div>
             </div>
+
             <div className='rounded-xl border border-border/60 bg-background/70 p-3'>
               <div className='mb-2 flex items-center justify-between text-muted-foreground'>
                 <Users className='h-4 w-4' />
@@ -274,10 +284,7 @@ export default function Page() {
               <p className='text-sm font-medium'>{t('review_wave.title')}</p>
               <p className='text-xs text-muted-foreground'>{t('last-7-days')}</p>
             </div>
-            <Badge
-              variant='secondary'
-              className='gap-1'
-            >
+            <Badge variant='secondary' className='gap-1'>
               <TrendingUp className='h-3 w-3' />
               {reviewsDeltaLabel}
             </Badge>
@@ -285,10 +292,7 @@ export default function Page() {
           {isLoading ? (
             <div className='flex h-36 items-end gap-2'>
               {Array.from({ length: 7 }).map((_, index) => (
-                <div
-                  key={index}
-                  className='flex flex-1 flex-col items-center gap-1'
-                >
+                <div key={index} className='flex flex-1 flex-col items-center gap-1'>
                   <Skeleton className='h-full w-full rounded-md' />
                   <Skeleton className='h-2 w-7' />
                 </div>
@@ -303,21 +307,9 @@ export default function Page() {
             >
               <AreaChart data={reviewWave}>
                 <CartesianGrid vertical={false} />
-                <XAxis
-                  dataKey='day'
-                  tickLine={false}
-                  axisLine={false}
-                />
-                <YAxis
-                  allowDecimals={false}
-                  tickLine={false}
-                  axisLine={false}
-                  width={28}
-                />
-                <ChartTooltip
-                  cursor={false}
-                  content={<ChartTooltipContent />}
-                />
+                <XAxis dataKey='day' tickLine={false} axisLine={false} />
+                <YAxis allowDecimals={false} tickLine={false} axisLine={false} width={28} />
+                <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
                 <Area
                   type='monotone'
                   dataKey='reviews'
@@ -332,7 +324,82 @@ export default function Page() {
         </div>
       </div>
 
-      <div className='grid gap-4 xl:grid-cols-[1.2fr_1fr]'>
+      <div className='grid gap-4 xl:grid-cols-[1fr_1.3fr]'>
+        <Card className='gap-4 p-5'>
+          <div className='flex items-center justify-between'>
+            <div>
+              <h2 className='text-lg font-semibold'>{td('stats.title')}</h2>
+              <p className='text-sm text-muted-foreground'>{t('last-7-days')}</p>
+            </div>
+            <Trophy className='h-5 w-5 text-muted-foreground animate-[trophy_1.9s_ease-in-out_infinite]' />
+          </div>
+
+          <div className='space-y-3'>
+            <div className='relative overflow-hidden rounded-2xl bg-gradient-to-br from-amber-400/20 via-transparent to-sky-400/20 p-[1px] shadow-[0_0_0_1px_rgba(148,163,184,0.2)]'>
+              <div className='pointer-events-none absolute inset-0 [mask:linear-gradient(120deg,transparent,white,transparent)] animate-[shine_6s_linear_infinite] opacity-70'>
+                <div className='absolute inset-0 bg-gradient-to-r from-transparent via-primary/20 to-transparent' />
+              </div>
+              <div className='rounded-2xl border bg-background/95 p-3'>
+                <div className='flex items-center justify-between'>
+                  <p className='text-sm font-medium'>{td('locations.analytics.top_location')}</p>
+                  <Badge variant='secondary' className='text-[10px] uppercase tracking-wide'>
+                    {td('locations.title')}
+                  </Badge>
+                </div>
+                {!isLoading && bestLocation ? (
+                  <div className='mt-2 space-y-1'>
+                    <p className='text-sm font-semibold'>{bestLocation.name}</p>
+                    <div className='flex items-center justify-between text-xs text-muted-foreground'>
+                      <span>{t('total_reviews')}</span>
+                      <span>{bestLocation.reviews}</span>
+                    </div>
+                    <div className='flex items-center justify-between text-xs text-muted-foreground'>
+                      <span>{t('avg_rating')}</span>
+                      <span>{bestLocation.rating.toFixed(2)}</span>
+                    </div>
+                  </div>
+                ) : null}
+                {isLoading ? <Skeleton className='mt-2 h-12 w-full' /> : null}
+                {!isLoading && !bestLocation ? (
+                  <p className='mt-2 text-sm text-muted-foreground'>{t('not_available')}</p>
+                ) : null}
+              </div>
+            </div>
+
+            <div className='relative overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-400/20 via-transparent to-indigo-400/20 p-[1px] shadow-[0_0_0_1px_rgba(148,163,184,0.2)]'>
+              <div className='pointer-events-none absolute inset-0 [mask:linear-gradient(120deg,transparent,white,transparent)] animate-[shine_6s_linear_infinite] opacity-70'>
+                <div className='absolute inset-0 bg-gradient-to-r from-transparent via-primary/20 to-transparent' />
+              </div>
+              <div className='rounded-2xl border bg-background/95 p-3'>
+                <div className='flex items-center justify-between'>
+                  <p className='text-sm font-medium'>{td('employees.analytics.top_employee')}</p>
+                  <Badge variant='secondary' className='text-[10px] uppercase tracking-wide'>
+                    {td('employees.title')}
+                  </Badge>
+                </div>
+                {!isLoading && bestEmployee ? (
+                  <div className='mt-2 space-y-1'>
+                    <p className='text-sm font-semibold'>{bestEmployee.name}</p>
+                    <p className='text-xs text-muted-foreground'>{bestEmployee.role}</p>
+                    <div className='flex items-center justify-between text-xs text-muted-foreground'>
+                      <span>{t('total_reviews')}</span>
+                      <span>{bestEmployee.reviews}</span>
+                    </div>
+                    <div className='flex items-center justify-between text-xs text-muted-foreground'>
+                      <span>{t('avg_rating')}</span>
+                      <span>{bestEmployee.rating.toFixed(2)}</span>
+                    </div>
+                  </div>
+                ) : null}
+                {isLoading ? <Skeleton className='mt-2 h-12 w-full' /> : null}
+                {!isLoading && !bestEmployee ? (
+                  <p className='mt-2 text-sm text-muted-foreground'>{t('not_available')}</p>
+                ) : null}
+              </div>
+            </div>
+          </div>
+        </Card>
+
         <Card className='gap-4 p-5'>
           <div className='flex items-center justify-between'>
             <div>
@@ -343,115 +410,27 @@ export default function Page() {
           </div>
           <div className='space-y-3'>
             {categoryStats.map((item) => (
-              <div
-                key={item.label}
-                className='space-y-1'
-              >
+              <div key={item.label} className='space-y-1'>
                 <div className='flex items-center justify-between gap-3'>
                   <p className='text-sm font-medium'>{item.label}</p>
                   <div className='flex items-center gap-2'>
-                    <span className='text-sm font-semibold'>{item.score}</span>
-                    <Badge
-                      variant='ghost'
-                      className={getDeltaTone(reviewsDeltaPercent)}
-                    >
-                      {item.delta}
-                    </Badge>
+                    <span className='text-sm text-muted-foreground'>{item.count}</span>
+                    <Badge variant='secondary'>{item.shareLabel}</Badge>
                   </div>
                 </div>
                 <div className='h-2 rounded-full bg-muted'>
                   <div
                     className='h-full rounded-full bg-gradient-to-r from-chart-2 to-primary'
-                    style={{ width: `${item.score}%` }}
+                    style={{ width: `${Math.max(0, Math.min(item.sharePercent, 100))}%` }}
                   />
                 </div>
               </div>
             ))}
           </div>
         </Card>
-
-        <Card className='gap-4 p-5'>
-          <div className='flex items-center justify-between'>
-            <div>
-              <h2 className='text-lg font-semibold'>{t('team_watchlist.title')}</h2>
-              <p className='text-sm text-muted-foreground'>{t('team_watchlist.description')}</p>
-            </div>
-            <Sparkles className='h-5 w-5 text-muted-foreground' />
-          </div>
-          <div className='space-y-2'>
-            {teamWatch.map((item) => (
-              <div
-                key={item.name}
-                className='rounded-xl border p-3'
-              >
-                <div className='flex items-start justify-between gap-3'>
-                  <div>
-                    <p className='text-sm font-medium'>{item.name}</p>
-                    <p className='text-xs text-muted-foreground'>{item.role}</p>
-                  </div>
-                  <div className='text-right'>
-                    <p className='text-sm font-semibold'>{item.rating.toFixed(2)}</p>
-                    {item.alerts > 0 ? (
-                      <Badge className='mt-1 gap-1 bg-amber-500/10 text-amber-700 dark:text-amber-400'>
-                        <AlertTriangle className='h-3 w-3' />
-                        {item.alerts} {t('team_watchlist.alerts')}
-                      </Badge>
-                    ) : (
-                      <Badge className='mt-1 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400'>
-                        {t('team_watchlist.stable')}
-                      </Badge>
-                    )}
-                  </div>
-                </div>
-              </div>
-            ))}
-            {!isLoading && teamWatch.length === 0 ? (
-              <p className='rounded-xl border p-3 text-sm text-muted-foreground'>{t('team_watchlist.empty')}</p>
-            ) : null}
-          </div>
-        </Card>
       </div>
 
-      <div className='mb-4 flex items-center justify-between'>
-        <div>
-          <h2 className='text-lg font-semibold'>{t('location_pulse.title')}</h2>
-          <p className='text-sm text-muted-foreground'>{t('location_pulse.description')}</p>
-        </div>
-        <Badge variant='outline'>{t('location_pulse.realtime')}</Badge>
-      </div>
-      <div className='grid gap-3 md:grid-cols-3'>
-        {locationPulse.map((item) => (
-          <div
-            key={item.name}
-            className='rounded-2xl border border-border/70 bg-muted/40 p-4'
-          >
-            <p className='text-sm font-medium'>{item.name}</p>
-            <div className='mt-3 grid grid-cols-2 gap-3 text-sm'>
-              <div>
-                <p className='text-muted-foreground'>{t('location_pulse.rating')}</p>
-                <p className='font-semibold'>{item.rating.toFixed(2)}</p>
-              </div>
-              <div>
-                <p className='text-muted-foreground'>{t('location_pulse.reviews')}</p>
-                <p className='font-semibold'>{item.reviews}</p>
-              </div>
-              <div className='col-span-2'>
-                <p className='text-muted-foreground'>{t('location_pulse.active_employees')}</p>
-                <p className='font-semibold'>{item.activeEmployees}</p>
-              </div>
-            </div>
-          </div>
-        ))}
-        {!isLoading && locationPulse.length === 0 ? (
-          <div className='rounded-2xl border border-border/70 bg-muted/40 p-4 text-sm text-muted-foreground'>
-            {t('location_pulse.empty')}
-          </div>
-        ) : null}
-      </div>
-
-      {isError ? (
-        <p className='text-sm text-destructive'>{t('error')}</p>
-      ) : null}
+      {isError ? <p className='text-sm text-destructive'>{t('error')}</p> : null}
     </div>
   );
 }

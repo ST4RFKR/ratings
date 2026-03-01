@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { DataTableColumnHeader } from '@/shared/components/tables/data-table';
 import { StatusBadge } from '@/shared/components/tables/status-badge';
@@ -16,7 +16,7 @@ export type LocationTableRow = {
   status: 'active' | 'inactive';
 };
 
-export const columnsStores: ColumnDef<LocationTableRow>[] = [
+export const columnsLocations: ColumnDef<LocationTableRow>[] = [
   {
     id: 'drag',
     header: '',
@@ -81,10 +81,11 @@ export const columnsStores: ColumnDef<LocationTableRow>[] = [
     header: 'Actions',
     cell: ({ row }) => (
       <ActionsDropdown
-        storeId={row.original.slug}
+        locationId={row.original.slug}
         onDelete={(id) => console.log('delete', id)}
         onEdit={(id) => console.log('edit', id)}
       />
     ),
   },
 ];
+

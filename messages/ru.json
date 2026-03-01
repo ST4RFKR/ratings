@@ -11,32 +11,31 @@
     "nav": {
       "dashboard": "Панель",
       "companies": "Компании",
-      "stores": "Магазины",
       "employees": "Сотрудники",
       "about-us": "О нас",
       "services": "Услуги",
       "work": "Работа",
       "team": "Команда",
       "pricing": "Цены",
-      "awards": "Награды"
+      "awards": "Награды",
+      "locations": "Локации"
     },
     "login": "Вход"
   },
   "dashboard": {
     "nav": {
       "dashboard": "Дашборд",
-      "stores": "Магазины",
       "employees": "Сотрудники",
       "reviews": "Оценки",
       "new-review": "Добавить оценку",
-      "stats": "Статистика"
+      "stats": "Статистика",
+      "locations": "Локации"
     },
     "main": {
       "title": "Дашборд",
       "description": "Добро пожаловать в дашборд",
       "avg_rating": "Ср. рейтинг",
       "total_reviews": "Всего отзывов",
-      "active_stores": "Активные магазины",
       "total_employees": "Всего сотрудников",
       "last-7-days": "За последние 7 дней",
       "invite_code": "Код приглашения",
@@ -77,15 +76,16 @@
         "reviews": "Отзывы",
         "active_employees": "Активные сотрудники",
         "empty": "Пока нет локаций."
-      }
+      },
+      "active_locations": "Активные локации"
     },
     "breadcrumbs": {
       "dashboard": "Дашборд",
-      "stores": "Магазины",
       "employees": "Сотрудники",
       "reviews": "Оценки",
       "new": "Добавить",
-      "stats": "Статистика"
+      "stats": "Статистика",
+      "locations": "Локации"
     },
     "user-nav": {
       "profile": "Профиль",
@@ -96,28 +96,6 @@
       "confirm-logout-description": "Вы уверены, что хотите завершить сессию?",
       "confirm-logout-cancel": "Отмена",
       "confirm-logout-action": "Выйти"
-    },
-    "stores": {
-      "title": "Магазины",
-      "description": "Список всех магазинов",
-      "search": "Поиск магазинов...",
-      "actions": {
-        "add_location": "Добавить локацию"
-      },
-      "table": {
-        "name": "Название",
-        "rating": "Рейтинг",
-        "reviews": "Отзывы",
-        "actions": "Действия",
-        "view": "Просмотреть",
-        "edit": "Редактировать"
-      },
-      "analytics": {
-        "avg_rating": "Ср. рейтинг",
-        "total_reviews": "Всего отзывов",
-        "top_store": "Лучший магазин",
-        "last_30_days": "За последние 30 дней"
-      }
     },
     "employees": {
       "title": "Сотрудники",
@@ -183,10 +161,10 @@
       },
       "search": "Поиск по сотруднику...",
       "filters": {
-        "store": "Магазин",
         "employee": "Сотрудник",
-        "all_stores": "Все магазины",
-        "all_employees": "Все сотрудники"
+        "all_employees": "Все сотрудники",
+        "location": "Локация",
+        "all_locations": "Все локации"
       }
     },
     "stats": {
@@ -199,10 +177,10 @@
           "placeholder": "Найти сотрудника...",
           "empty": "Сотрудники не найдены"
         },
-        "store": {
-          "label": "Перейти к магазину",
-          "placeholder": "Найти магазин...",
-          "empty": "Магазины не найдены"
+        "location": {
+          "label": "Перейти к локации",
+          "placeholder": "Найти локацию...",
+          "empty": "Локации не найдены"
         }
       },
       "tabs": {
@@ -366,6 +344,28 @@
           "create": "Создать оценку",
           "create_loading": "Создание..."
         }
+      }
+    },
+    "locations": {
+      "title": "Локации",
+      "description": "Список всех локаций",
+      "search": "Поиск локаций...",
+      "actions": {
+        "add_location": "Добавить локацию"
+      },
+      "table": {
+        "name": "Название",
+        "rating": "Рейтинг",
+        "reviews": "Отзывы",
+        "actions": "Действия",
+        "view": "Просмотреть",
+        "edit": "Редактировать"
+      },
+      "analytics": {
+        "avg_rating": "Ср. рейтинг",
+        "total_reviews": "Всего отзывов",
+        "last_30_days": "За последние 30 дней",
+        "top_location": "Лучшая локация"
       }
     }
   },

@@ -1,6 +1,6 @@
-'use client';
+﻿'use client';
 import { ROUTES } from '@/shared/config';
-import { BarChart3, LayoutDashboard, PlusCircle, Star, Store, Users } from 'lucide-react';
+import { BarChart3, LayoutDashboard, MapPin, PlusCircle, Star, Users } from 'lucide-react';
 
 export const sidebarNav = [
     {
@@ -9,9 +9,9 @@ export const sidebarNav = [
         icon: LayoutDashboard,
     },
     {
-        title: 'stores',
-        url: ROUTES.DASHBOARD.STORES,
-        icon: Store,
+        title: 'locations',
+        url: ROUTES.DASHBOARD.LOCATIONS,
+        icon: MapPin,
     },
     {
         title: 'employees',
@@ -34,3 +34,4 @@ export const sidebarNav = [
         icon: BarChart3,
     },
 ];
+

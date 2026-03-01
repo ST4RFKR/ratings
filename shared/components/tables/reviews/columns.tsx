@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { DataTableColumnHeader } from '@/shared/components/tables/data-table';
 import {
@@ -10,7 +10,7 @@ import {
 } from '@/shared/components/ui';
 import { ROUTES } from '@/shared/config';
 import { ColumnDef } from '@tanstack/react-table';
-import { ExternalLink, MoreHorizontal, Store, User } from 'lucide-react';
+import { ExternalLink, MapPin, MoreHorizontal, User } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 export type ReviewTableRow = {
@@ -49,7 +49,7 @@ export const columnsReviews: ColumnDef<ReviewTableRow>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader
         column={column}
-        title='Store'
+        title='Location'
       />
     ),
   },
@@ -104,9 +104,9 @@ function ReviewActionsDropdown({ row }: { row: ReviewTableRow }) {
           <User className='mr-2 h-4 w-4' />
           Open employee
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => router.push(ROUTES.DASHBOARD.STORE_DETAILS(row.locationSlug))}>
-          <Store className='mr-2 h-4 w-4' />
-          Open store
+        <DropdownMenuItem onClick={() => router.push(ROUTES.DASHBOARD.LOCATION_DETAILS(row.locationSlug))}>
+          <MapPin className='mr-2 h-4 w-4' />
+          Open location
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => navigator.clipboard.writeText(row.id)}>
           <ExternalLink className='mr-2 h-4 w-4' />
@@ -116,4 +116,5 @@ function ReviewActionsDropdown({ row }: { row: ReviewTableRow }) {
     </DropdownMenu>
   );
 }
+
 

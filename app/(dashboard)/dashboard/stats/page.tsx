@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useGetEmployees } from '@/features/employee/get-employes';
 import { useGetLocation } from '@/features/location/get-location/model/use-get-location';
@@ -22,7 +22,7 @@ import {
 } from '@/shared/components/ui';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/components/ui/card';
 import { ROUTES } from '@/shared/config';
-import { BarChart3, Search, Store, Users } from 'lucide-react';
+import { BarChart3, MapPin, Search, Users } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { useMemo } from 'react';
@@ -90,10 +90,10 @@ export default function StatsPage() {
     [locationsQuery.data],
   );
 
-  const { employeesData, storesData, monthlyTrend } = useMemo(() => {
+  const { employeesData, locationsData, monthlyTrend } = useMemo(() => {
     const reviews = reviewsQuery.data ?? [];
     const employeeMap = new Map<string, { label: string; reviews: number; totalRating: number }>();
-    const storeMap = new Map<string, { label: string; reviews: number; totalRating: number }>();
+    const locationMap = new Map<string, { label: string; reviews: number; totalRating: number }>();
     const months: { key: string; label: string; reviews: number; totalRating: number }[] = [];
     const now = new Date();
 
@@ -122,15 +122,15 @@ export default function StatsPage() {
         totalRating: employeeCurrent.totalRating + review.rating,
       });
 
-      const storeCurrent = storeMap.get(review.location.id) ?? {
+      const locationCurrent = locationMap.get(review.location.id) ?? {
         label: review.location.name,
         reviews: 0,
         totalRating: 0,
       };
-      storeMap.set(review.location.id, {
-        label: storeCurrent.label,
-        reviews: storeCurrent.reviews + 1,
-        totalRating: storeCurrent.totalRating + review.rating,
+      locationMap.set(review.location.id, {
+        label: locationCurrent.label,
+        reviews: locationCurrent.reviews + 1,
+        totalRating: locationCurrent.totalRating + review.rating,
       });
 
       const month = byKey.get(getMonthKey(review.createdAt));
@@ -143,7 +143,7 @@ export default function StatsPage() {
 
     return {
       employeesData: mapToRows(employeeMap, 8),
-      storesData: mapToRows(storeMap, 8),
+      locationsData: mapToRows(locationMap, 8),
       monthlyTrend: months.map((item) => ({
         label: item.label,
         reviews: item.reviews,
@@ -201,17 +201,17 @@ export default function StatsPage() {
         </Field>
 
         <Field>
-          <FieldLabel>{t('selectors.store.label')}</FieldLabel>
+          <FieldLabel>{t('selectors.location.label')}</FieldLabel>
           <Combobox<ComboboxItemType>
             items={locationItems}
             value={null}
             onValueChange={(item) => {
               if (!item) return;
-              router.push(ROUTES.DASHBOARD.STORE_DETAILS(item.routeValue));
+              router.push(ROUTES.DASHBOARD.LOCATION_DETAILS(item.routeValue));
             }}
           >
             <ComboboxInput
-              placeholder={t('selectors.store.placeholder')}
+              placeholder={t('selectors.location.placeholder')}
               className='[&_[data-slot=input-group-control]]:pl-9'
               showClear
               disabled={locationsQuery.isLoading}
@@ -221,14 +221,14 @@ export default function StatsPage() {
               </span>
             </ComboboxInput>
             <ComboboxContent>
-              <ComboboxEmpty>{t('selectors.store.empty')}</ComboboxEmpty>
+              <ComboboxEmpty>{t('selectors.location.empty')}</ComboboxEmpty>
               <ComboboxList>
                 {(item) => (
                   <ComboboxItem
                     key={item.id}
                     value={item}
                   >
-                    <Store className='size-4 text-muted-foreground' />
+                    <MapPin className='size-4 text-muted-foreground' />
                     {item.label}
                   </ComboboxItem>
                 )}
@@ -251,10 +251,10 @@ export default function StatsPage() {
             {t('tabs.employees')}
           </TabsTrigger>
           <TabsTrigger
-            value='stores'
+            value='locations'
             className='gap-2'
           >
-            <Store className='h-4 w-4' />
+            <MapPin className='h-4 w-4' />
             {t('tabs.locations')}
           </TabsTrigger>
         </TabsList>
@@ -368,7 +368,7 @@ export default function StatsPage() {
         </TabsContent>
 
         <TabsContent
-          value='stores'
+          value='locations'
           className='mt-4 space-y-4'
         >
           <Card className='shadow-none'>
@@ -384,12 +384,12 @@ export default function StatsPage() {
                 }}
               >
                 <AreaChart
-                  data={storesData}
+                  data={locationsData}
                   accessibilityLayer
                 >
                   <defs>
                     <linearGradient
-                      id='storesAreaFill'
+                      id='locationsAreaFill'
                       x1='0'
                       y1='0'
                       x2='0'
@@ -425,7 +425,7 @@ export default function StatsPage() {
                     type='monotone'
                     dataKey='averageRating'
                     stroke='var(--color-averageRating)'
-                    fill='url(#storesAreaFill)'
+                    fill='url(#locationsAreaFill)'
                     strokeWidth={2.75}
                   />
                 </AreaChart>
@@ -477,3 +477,4 @@ export default function StatsPage() {
     </div>
   );
 }
+

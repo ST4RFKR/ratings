@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { Copy, ExternalLink, MoreHorizontal, Pencil, Trash } from 'lucide-react';
 import { useRouter } from 'next/navigation';
@@ -7,16 +7,16 @@ import { Button, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMe
 import { ROUTES } from '@/shared/config';
 
 interface ActionsDropdownProps {
-    storeId: string;
+    locationId: string;
     onDelete?: (id: string) => void;
     onEdit?: (id: string) => void;
 }
 
-export function ActionsDropdown({ storeId, onDelete, onEdit }: ActionsDropdownProps) {
+export function ActionsDropdown({ locationId, onDelete, onEdit }: ActionsDropdownProps) {
     const router = useRouter();
 
     const handleCopy = () => {
-        navigator.clipboard.writeText(storeId);
+        navigator.clipboard.writeText(locationId);
     };
 
     return (
@@ -36,18 +36,18 @@ export function ActionsDropdown({ storeId, onDelete, onEdit }: ActionsDropdownPr
                     Copy ID
                 </DropdownMenuItem>
 
-                <DropdownMenuItem onClick={() => router.push(ROUTES.DASHBOARD.STORE_DETAILS(storeId))}>
+                <DropdownMenuItem onClick={() => router.push(ROUTES.DASHBOARD.LOCATION_DETAILS(locationId))}>
                     <ExternalLink className='mr-2 h-4 w-4' />
                     View location
                 </DropdownMenuItem>
 
-                <DropdownMenuItem onClick={() => onEdit?.(storeId)}>
+                <DropdownMenuItem onClick={() => onEdit?.(locationId)}>
                     <Pencil className='mr-2 h-4 w-4' />
                     Edit
                 </DropdownMenuItem>
 
                 <DropdownMenuItem
-                    onClick={() => onDelete?.(storeId)}
+                    onClick={() => onDelete?.(locationId)}
                     className='text-destructive focus:text-destructive'
                 >
                     <Trash className='mr-2 h-4 w-4' />
@@ -57,3 +57,4 @@ export function ActionsDropdown({ storeId, onDelete, onEdit }: ActionsDropdownPr
         </DropdownMenu>
     );
 }
+
