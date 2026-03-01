@@ -38,7 +38,46 @@
       "total_reviews": "Всего отзывов",
       "active_stores": "Активные магазины",
       "total_employees": "Всего сотрудников",
-      "last-7-days": "За последние 7 дней"
+      "last-7-days": "За последние 7 дней",
+      "invite_code": "Код приглашения",
+      "not_available": "Н/Д",
+      "error": "Не удалось загрузить данные дашборда. Обновите страницу.",
+      "kpi": {
+        "review_period_short": "7д",
+        "average_short": "ср",
+        "live_short": "онлайн",
+        "team_short": "команда"
+      },
+      "review_wave": {
+        "title": "Волна отзывов"
+      },
+      "rating_distribution": {
+        "title": "Распределение оценок",
+        "description": "Сформировано на основе реальных отзывов",
+        "buckets": {
+          "five": "5 звёзд",
+          "four": "4 звезды",
+          "three": "3 звезды",
+          "two": "2 звезды",
+          "one": "1 звезда"
+        }
+      },
+      "team_watchlist": {
+        "title": "Список внимания",
+        "description": "Сотрудники, которым нужно внимание в первую очередь",
+        "alerts": "сигналов",
+        "stable": "стабильно",
+        "empty": "Пока нет сотрудников."
+      },
+      "location_pulse": {
+        "title": "Пульс локаций",
+        "description": "Текущее состояние по локациям на основе живых данных компании",
+        "realtime": "Онлайн-табло",
+        "rating": "Рейтинг",
+        "reviews": "Отзывы",
+        "active_employees": "Активные сотрудники",
+        "empty": "Пока нет локаций."
+      }
     },
     "breadcrumbs": {
       "dashboard": "Дашборд",
@@ -142,12 +181,12 @@
         "title": "Добавить оценку",
         "description": "Форма добавления новой оценки"
       },
-      "search": "Search by employee...",
+      "search": "Поиск по сотруднику...",
       "filters": {
-        "store": "Store",
-        "employee": "Employee",
-        "all_stores": "All stores",
-        "all_employees": "All employees"
+        "store": "Магазин",
+        "employee": "Сотрудник",
+        "all_stores": "Все магазины",
+        "all_employees": "Все сотрудники"
       }
     },
     "stats": {
@@ -210,7 +249,7 @@
           },
           "industry": {
             "label": "Индустрия",
-            "placeholder": "Retail, Food, Services..."
+            "placeholder": "Ритейл, еда, услуги..."
           },
           "description": {
             "label": "Описание",

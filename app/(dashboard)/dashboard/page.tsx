@@ -1,5 +1,11 @@
+'use client';
+
+import { useGetAllCompanyByUser } from '@/features/company/get-user-company/model/use-get-user-all-company';
+import { useGetEmployees } from '@/features/employee/get-employes';
+import { useGetLocation } from '@/features/location/get-location/model/use-get-location';
+import { useGetReviews } from '@/features/review/get-reviews';
 import { JoinCodeBadge } from '@/shared/components/common/join-code-badge';
-import { Badge, Card } from '@/shared/components/ui';
+import { Badge, Card, ChartContainer, ChartTooltip, ChartTooltipContent, Skeleton } from '@/shared/components/ui';
 import {
   AlertTriangle,
   CircleDotDashed,
@@ -11,48 +17,188 @@ import {
   TrendingUp,
   Users,
 } from 'lucide-react';
-import { getTranslations } from 'next-intl/server';
+import { useLocale, useTranslations } from 'next-intl';
+import { useSession } from 'next-auth/react';
+import { useMemo } from 'react';
+import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from 'recharts';
 
-const reviewWave = [
-  { day: 'Mon', reviews: 42 },
-  { day: 'Tue', reviews: 58 },
-  { day: 'Wed', reviews: 49 },
-  { day: 'Thu', reviews: 64 },
-  { day: 'Fri', reviews: 72 },
-  { day: 'Sat', reviews: 54 },
-  { day: 'Sun', reviews: 39 },
-];
+const REVIEW_WAVE_COLOR = 'var(--primary)';
 
-const categoryStats = [
-  { label: 'Speed', score: 82, delta: '+4.1%' },
-  { label: 'Politeness', score: 91, delta: '+1.8%' },
-  { label: 'Quality', score: 76, delta: '-1.2%' },
-  { label: 'Professionalism', score: 88, delta: '+2.3%' },
-  { label: 'Cleanliness', score: 73, delta: '-0.7%' },
-];
-
-const locationPulse = [
-  { name: 'Downtown', rating: 4.8, reviews: 241, activeEmployees: 27 },
-  { name: 'Riverside', rating: 4.6, reviews: 198, activeEmployees: 19 },
-  { name: 'Central Mall', rating: 4.3, reviews: 172, activeEmployees: 22 },
-];
-
-const teamWatch = [
-  { name: 'Liam Carter', role: 'Supervisor', rating: 4.9, alerts: 0 },
-  { name: 'Mia Flores', role: 'Cashier', rating: 4.2, alerts: 1 },
-  { name: 'Noah Smith', role: 'Sales', rating: 3.8, alerts: 2 },
-  { name: 'Emma Johnson', role: 'Waiter', rating: 4.6, alerts: 0 },
-];
-
-function getDeltaTone(delta: string) {
-  return delta.startsWith('+')
+function getDeltaTone(value: number) {
+  return value >= 0
     ? 'text-emerald-700 bg-emerald-500/10 dark:text-emerald-400'
     : 'text-amber-700 bg-amber-500/10 dark:text-amber-400';
 }
 
-export default async function Page() {
-  const t = await getTranslations('dashboard.main');
-  const maxReviews = Math.max(1, ...reviewWave.map((item) => item.reviews));
+function toDayKey(date: Date) {
+  const y = date.getFullYear();
+  const m = `${date.getMonth() + 1}`.padStart(2, '0');
+  const d = `${date.getDate()}`.padStart(2, '0');
+  return `${y}-${m}-${d}`;
+}
+
+function toPercent(value: number) {
+  return `${value >= 0 ? '+' : ''}${value.toFixed(1)}%`;
+}
+
+function startOfDay(date: Date) {
+  return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+}
+
+export default function Page() {
+  const t = useTranslations('dashboard.main');
+  const locale = useLocale();
+  const session = useSession();
+  const reviewsQuery = useGetReviews({});
+  const employeesQuery = useGetEmployees();
+  const locationsQuery = useGetLocation();
+  const companiesQuery = useGetAllCompanyByUser();
+
+  const inviteCode = useMemo(() => {
+    type CompanyLike = { id: string; joinCode?: string | null };
+    const companies = (companiesQuery.data ?? []) as CompanyLike[];
+    const activeCompanyId = session.data?.user?.activeCompanyId;
+    const activeCompany = activeCompanyId ? companies.find((item) => item.id === activeCompanyId) : null;
+
+    return activeCompany?.joinCode ?? companies[0]?.joinCode ?? null;
+  }, [companiesQuery.data, session.data?.user?.activeCompanyId]);
+
+  const isLoading = reviewsQuery.isLoading || employeesQuery.isLoading || locationsQuery.isLoading;
+
+  const {
+    reviewWave,
+    categoryStats,
+    locationPulse,
+    teamWatch,
+    totalReviews,
+    averageRating,
+    activeLocations,
+    activeEmployees,
+    reviewsDeltaPercent,
+  } = useMemo(() => {
+    const reviews = reviewsQuery.data ?? [];
+    const employees = employeesQuery.data ?? [];
+    const locations = locationsQuery.data ?? [];
+
+    const totalReviewsCount = reviews.length;
+    const avgRating =
+      totalReviewsCount > 0
+        ? Number((reviews.reduce((sum, review) => sum + review.rating, 0) / totalReviewsCount).toFixed(2))
+        : 0;
+
+    const activeLocationsCount = locations.filter((item) => item.status === 'ACTIVE').length;
+    const activeEmployeesCount = employees.filter((item) => item.status === 'ACTIVE').length;
+
+    const today = startOfDay(new Date());
+    const dayMs = 1000 * 60 * 60 * 24;
+    const latestReviewTs =
+      reviews.length > 0 ? Math.max(...reviews.map((review) => new Date(review.createdAt).getTime())) : today.getTime();
+    const latestReviewDay = startOfDay(new Date(latestReviewTs));
+    const chartEndDate = latestReviewDay;
+
+    const dailyTemplate = Array.from({ length: 7 }).map((_, offset) => {
+      const date = new Date(chartEndDate.getFullYear(), chartEndDate.getMonth(), chartEndDate.getDate() - (6 - offset));
+      return {
+        key: toDayKey(date),
+        day: date.toLocaleDateString(locale, { weekday: 'short' }),
+        reviews: 0,
+      };
+    });
+    const dailyMap = new Map(dailyTemplate.map((item) => [item.key, item]));
+
+    let currentWeekReviews = 0;
+    let previousWeekReviews = 0;
+    const windowEndTs = chartEndDate.getTime();
+
+    const locationReviewsMap = new Map<string, number>();
+    const ratingBuckets = [
+      { label: t('rating_distribution.buckets.five'), min: 4.5, max: 5.01, count: 0 },
+      { label: t('rating_distribution.buckets.four'), min: 3.5, max: 4.5, count: 0 },
+      { label: t('rating_distribution.buckets.three'), min: 2.5, max: 3.5, count: 0 },
+      { label: t('rating_distribution.buckets.two'), min: 1.5, max: 2.5, count: 0 },
+      { label: t('rating_distribution.buckets.one'), min: 0, max: 1.5, count: 0 },
+    ];
+
+    for (const review of reviews) {
+      const created = new Date(review.createdAt);
+      const ageInDays = Math.floor((windowEndTs - startOfDay(created).getTime()) / dayMs);
+      const day = dailyMap.get(toDayKey(created));
+      if (day) {
+        day.reviews += 1;
+      }
+      if (ageInDays >= 0 && ageInDays <= 6) {
+        currentWeekReviews += 1;
+      } else if (ageInDays >= 7 && ageInDays <= 13) {
+        previousWeekReviews += 1;
+      }
+
+      locationReviewsMap.set(review.location.id, (locationReviewsMap.get(review.location.id) ?? 0) + 1);
+
+      const bucket = ratingBuckets.find((item) => review.rating >= item.min && review.rating < item.max);
+      if (bucket) {
+        bucket.count += 1;
+      }
+    }
+
+    const reviewsDelta =
+      previousWeekReviews > 0
+        ? ((currentWeekReviews - previousWeekReviews) / previousWeekReviews) * 100
+        : currentWeekReviews > 0
+          ? 100
+          : 0;
+
+    const pulse = locations
+      .map((location) => {
+        const locationEmployees = employees.filter((employee) => employee.locationId === location.id);
+        const locationActiveEmployees = locationEmployees.filter((employee) => employee.status === 'ACTIVE').length;
+        return {
+          name: location.name,
+          rating: Number(location.rating.toFixed(2)),
+          reviews: locationReviewsMap.get(location.id) ?? 0,
+          activeEmployees: locationActiveEmployees,
+        };
+      })
+      .sort((a, b) => b.reviews - a.reviews)
+      .slice(0, 3);
+
+    const watch = employees
+      .map((employee) => {
+        let alerts = 0;
+        if (employee.rating < 4) alerts += 1;
+        if (employee.status !== 'ACTIVE') alerts += 1;
+        if (employee._count.reviews < 3) alerts += 1;
+        return {
+          name: employee.fullName,
+          role: employee.role,
+          rating: Number(employee.rating.toFixed(2)),
+          alerts,
+        };
+      })
+      .sort((a, b) => b.alerts - a.alerts || a.rating - b.rating)
+      .slice(0, 4);
+
+    const maxBucketCount = Math.max(1, ...ratingBuckets.map((item) => item.count));
+    const bucketStats = ratingBuckets.map((item) => ({
+      label: item.label,
+      score: Math.round((item.count / maxBucketCount) * 100),
+      delta: toPercent(reviewsDelta),
+    }));
+
+    return {
+      reviewWave: dailyTemplate,
+      categoryStats: bucketStats,
+      locationPulse: pulse,
+      teamWatch: watch,
+      totalReviews: totalReviewsCount,
+      averageRating: avgRating,
+      activeLocations: activeLocationsCount,
+      activeEmployees: activeEmployeesCount,
+      reviewsDeltaPercent: reviewsDelta,
+    };
+  }, [employeesQuery.data, locale, locationsQuery.data, reviewsQuery.data, t]);
+
+  const reviewsDeltaLabel = toPercent(reviewsDeltaPercent);
+  const isError = reviewsQuery.isError || employeesQuery.isError || locationsQuery.isError;
 
   return (
     <div className='flex flex-1 flex-col gap-4 p-4'>
@@ -67,8 +213,14 @@ export default async function Page() {
               <p className='max-w-xl text-sm text-muted-foreground'>{t('description')}</p>
             </div>
             <div className='flex items-center gap-2 rounded-xl border bg-background/80 px-3 py-2 backdrop-blur'>
-              <span className='text-xs font-medium text-muted-foreground'>Invite code</span>
-              <JoinCodeBadge code='FRSATD' />
+              <span className='text-xs font-medium text-muted-foreground'>{t('invite_code')}</span>
+              {companiesQuery.isLoading ? <Skeleton className='h-6 w-20 rounded-full' /> : null}
+              {!companiesQuery.isLoading && inviteCode ? <JoinCodeBadge code={inviteCode} /> : null}
+              {!companiesQuery.isLoading && !inviteCode ? (
+                <Badge variant='outline' className='text-xs'>
+                  {t('not_available')}
+                </Badge>
+              ) : null}
             </div>
           </div>
 
@@ -76,34 +228,42 @@ export default async function Page() {
             <div className='rounded-xl border border-border/60 bg-background/70 p-3'>
               <div className='mb-2 flex items-center justify-between text-muted-foreground'>
                 <MessageSquareMore className='h-4 w-4' />
-                <span className='text-xs'>7d</span>
+                <span className='text-xs'>{t('kpi.review_period_short')}</span>
               </div>
-              <div className='text-xl font-semibold'>378</div>
-              <div className='text-xs text-muted-foreground'>reviews collected</div>
+              {isLoading ? <Skeleton className='h-7 w-14' /> : <div className='text-xl font-semibold'>{totalReviews}</div>}
+              <div className='text-xs text-muted-foreground'>{t('total_reviews')}</div>
             </div>
             <div className='rounded-xl border border-border/60 bg-background/70 p-3'>
               <div className='mb-2 flex items-center justify-between text-muted-foreground'>
                 <Star className='h-4 w-4' />
-                <span className='text-xs'>avg</span>
+                <span className='text-xs'>{t('kpi.average_short')}</span>
               </div>
-              <div className='text-xl font-semibold'>4.67</div>
-              <div className='text-xs text-muted-foreground'>company rating</div>
+              {isLoading ? (
+                <Skeleton className='h-7 w-16' />
+              ) : (
+                <div className='text-xl font-semibold'>{averageRating.toFixed(2)}</div>
+              )}
+              <div className='text-xs text-muted-foreground'>{t('avg_rating')}</div>
             </div>
             <div className='rounded-xl border border-border/60 bg-background/70 p-3'>
               <div className='mb-2 flex items-center justify-between text-muted-foreground'>
                 <MapPin className='h-4 w-4' />
-                <span className='text-xs'>live</span>
+                <span className='text-xs'>{t('kpi.live_short')}</span>
               </div>
-              <div className='text-xl font-semibold'>3</div>
-              <div className='text-xs text-muted-foreground'>active locations</div>
+              {isLoading ? <Skeleton className='h-7 w-12' /> : <div className='text-xl font-semibold'>{activeLocations}</div>}
+              <div className='text-xs text-muted-foreground'>{t('active_stores')}</div>
             </div>
             <div className='rounded-xl border border-border/60 bg-background/70 p-3'>
               <div className='mb-2 flex items-center justify-between text-muted-foreground'>
                 <Users className='h-4 w-4' />
-                <span className='text-xs'>team</span>
+                <span className='text-xs'>{t('kpi.team_short')}</span>
               </div>
-              <div className='text-xl font-semibold'>68</div>
-              <div className='text-xs text-muted-foreground'>employees on shift</div>
+              {isLoading ? (
+                <Skeleton className='h-7 w-14' />
+              ) : (
+                <div className='text-xl font-semibold'>{activeEmployees}</div>
+              )}
+              <div className='text-xs text-muted-foreground'>{t('total_employees')}</div>
             </div>
           </div>
         </div>
@@ -111,31 +271,64 @@ export default async function Page() {
         <div className='rounded-2xl border border-border/70 bg-card/90 p-4'>
           <div className='mb-4 flex items-center justify-between'>
             <div>
-              <p className='text-sm font-medium'>Review wave</p>
-              <p className='text-xs text-muted-foreground'>Last 7 days</p>
+              <p className='text-sm font-medium'>{t('review_wave.title')}</p>
+              <p className='text-xs text-muted-foreground'>{t('last-7-days')}</p>
             </div>
             <Badge
               variant='secondary'
               className='gap-1'
             >
               <TrendingUp className='h-3 w-3' />
-              +12.4%
+              {reviewsDeltaLabel}
             </Badge>
           </div>
-          <div className='flex h-36 items-end gap-2'>
-            {reviewWave.map((item) => (
-              <div
-                key={item.day}
-                className='flex flex-1 flex-col items-center gap-1'
-              >
+          {isLoading ? (
+            <div className='flex h-36 items-end gap-2'>
+              {Array.from({ length: 7 }).map((_, index) => (
                 <div
-                  className='w-full rounded-md bg-gradient-to-t from-primary to-chart-2/80'
-                  style={{ height: `${Math.max(16, (item.reviews / maxReviews) * 100)}%` }}
+                  key={index}
+                  className='flex flex-1 flex-col items-center gap-1'
+                >
+                  <Skeleton className='h-full w-full rounded-md' />
+                  <Skeleton className='h-2 w-7' />
+                </div>
+              ))}
+            </div>
+          ) : (
+            <ChartContainer
+              className='h-36 w-full'
+              config={{
+                reviews: { label: t('total_reviews'), color: REVIEW_WAVE_COLOR },
+              }}
+            >
+              <AreaChart data={reviewWave}>
+                <CartesianGrid vertical={false} />
+                <XAxis
+                  dataKey='day'
+                  tickLine={false}
+                  axisLine={false}
                 />
-                <span className='text-[10px] text-muted-foreground'>{item.day}</span>
-              </div>
-            ))}
-          </div>
+                <YAxis
+                  allowDecimals={false}
+                  tickLine={false}
+                  axisLine={false}
+                  width={28}
+                />
+                <ChartTooltip
+                  cursor={false}
+                  content={<ChartTooltipContent />}
+                />
+                <Area
+                  type='monotone'
+                  dataKey='reviews'
+                  fill='var(--color-reviews)'
+                  fillOpacity={0.25}
+                  stroke='var(--color-reviews)'
+                  strokeWidth={2}
+                />
+              </AreaChart>
+            </ChartContainer>
+          )}
         </div>
       </div>
 
@@ -143,8 +336,8 @@ export default async function Page() {
         <Card className='gap-4 p-5'>
           <div className='flex items-center justify-between'>
             <div>
-              <h2 className='text-lg font-semibold'>Category momentum</h2>
-              <p className='text-sm text-muted-foreground'>From `ReviewScore` categories</p>
+              <h2 className='text-lg font-semibold'>{t('rating_distribution.title')}</h2>
+              <p className='text-sm text-muted-foreground'>{t('rating_distribution.description')}</p>
             </div>
             <CircleDotDashed className='h-5 w-5 text-muted-foreground' />
           </div>
@@ -160,7 +353,7 @@ export default async function Page() {
                     <span className='text-sm font-semibold'>{item.score}</span>
                     <Badge
                       variant='ghost'
-                      className={getDeltaTone(item.delta)}
+                      className={getDeltaTone(reviewsDeltaPercent)}
                     >
                       {item.delta}
                     </Badge>
@@ -180,8 +373,8 @@ export default async function Page() {
         <Card className='gap-4 p-5'>
           <div className='flex items-center justify-between'>
             <div>
-              <h2 className='text-lg font-semibold'>Team watchlist</h2>
-              <p className='text-sm text-muted-foreground'>Employees needing attention first</p>
+              <h2 className='text-lg font-semibold'>{t('team_watchlist.title')}</h2>
+              <p className='text-sm text-muted-foreground'>{t('team_watchlist.description')}</p>
             </div>
             <Sparkles className='h-5 w-5 text-muted-foreground' />
           </div>
@@ -197,31 +390,34 @@ export default async function Page() {
                     <p className='text-xs text-muted-foreground'>{item.role}</p>
                   </div>
                   <div className='text-right'>
-                    <p className='text-sm font-semibold'>★ {item.rating}</p>
+                    <p className='text-sm font-semibold'>{item.rating.toFixed(2)}</p>
                     {item.alerts > 0 ? (
                       <Badge className='mt-1 gap-1 bg-amber-500/10 text-amber-700 dark:text-amber-400'>
                         <AlertTriangle className='h-3 w-3' />
-                        {item.alerts} alerts
+                        {item.alerts} {t('team_watchlist.alerts')}
                       </Badge>
                     ) : (
-                      <Badge className='mt-1 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400'>stable</Badge>
+                      <Badge className='mt-1 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400'>
+                        {t('team_watchlist.stable')}
+                      </Badge>
                     )}
                   </div>
                 </div>
               </div>
             ))}
+            {!isLoading && teamWatch.length === 0 ? (
+              <p className='rounded-xl border p-3 text-sm text-muted-foreground'>{t('team_watchlist.empty')}</p>
+            ) : null}
           </div>
         </Card>
       </div>
 
       <div className='mb-4 flex items-center justify-between'>
         <div>
-          <h2 className='text-lg font-semibold'>Location pulse</h2>
-          <p className='text-sm text-muted-foreground'>
-            Mock snapshot aligned with Company + Location + Employee models
-          </p>
+          <h2 className='text-lg font-semibold'>{t('location_pulse.title')}</h2>
+          <p className='text-sm text-muted-foreground'>{t('location_pulse.description')}</p>
         </div>
-        <Badge variant='outline'>Realtime board</Badge>
+        <Badge variant='outline'>{t('location_pulse.realtime')}</Badge>
       </div>
       <div className='grid gap-3 md:grid-cols-3'>
         {locationPulse.map((item) => (
@@ -232,21 +428,30 @@ export default async function Page() {
             <p className='text-sm font-medium'>{item.name}</p>
             <div className='mt-3 grid grid-cols-2 gap-3 text-sm'>
               <div>
-                <p className='text-muted-foreground'>Rating</p>
-                <p className='font-semibold'>★ {item.rating}</p>
+                <p className='text-muted-foreground'>{t('location_pulse.rating')}</p>
+                <p className='font-semibold'>{item.rating.toFixed(2)}</p>
               </div>
               <div>
-                <p className='text-muted-foreground'>Reviews</p>
+                <p className='text-muted-foreground'>{t('location_pulse.reviews')}</p>
                 <p className='font-semibold'>{item.reviews}</p>
               </div>
               <div className='col-span-2'>
-                <p className='text-muted-foreground'>Active employees</p>
+                <p className='text-muted-foreground'>{t('location_pulse.active_employees')}</p>
                 <p className='font-semibold'>{item.activeEmployees}</p>
               </div>
             </div>
           </div>
         ))}
+        {!isLoading && locationPulse.length === 0 ? (
+          <div className='rounded-2xl border border-border/70 bg-muted/40 p-4 text-sm text-muted-foreground'>
+            {t('location_pulse.empty')}
+          </div>
+        ) : null}
       </div>
+
+      {isError ? (
+        <p className='text-sm text-destructive'>{t('error')}</p>
+      ) : null}
     </div>
   );
 }

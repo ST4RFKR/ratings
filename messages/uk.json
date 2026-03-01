@@ -38,7 +38,46 @@
       "total_reviews": "Всього відгуків",
       "active_stores": "Активні магазини",
       "total_employees": "Всього співробітників",
-      "last-7-days": "За останні 7 днів"
+      "last-7-days": "За останні 7 днів",
+      "invite_code": "Код запрошення",
+      "not_available": "Н/Д",
+      "error": "Не вдалося завантажити дані дашборду. Оновіть сторінку.",
+      "kpi": {
+        "review_period_short": "7д",
+        "average_short": "сер",
+        "live_short": "онлайн",
+        "team_short": "команда"
+      },
+      "review_wave": {
+        "title": "Хвиля відгуків"
+      },
+      "rating_distribution": {
+        "title": "Розподіл оцінок",
+        "description": "Сформовано на основі реальних відгуків",
+        "buckets": {
+          "five": "5 зірок",
+          "four": "4 зірки",
+          "three": "3 зірки",
+          "two": "2 зірки",
+          "one": "1 зірка"
+        }
+      },
+      "team_watchlist": {
+        "title": "Список уваги",
+        "description": "Співробітники, які потребують уваги насамперед",
+        "alerts": "сигналів",
+        "stable": "стабільно",
+        "empty": "Поки немає співробітників."
+      },
+      "location_pulse": {
+        "title": "Пульс локацій",
+        "description": "Поточний стан за локаціями на основі живих даних компанії",
+        "realtime": "Онлайн-табло",
+        "rating": "Рейтинг",
+        "reviews": "Відгуки",
+        "active_employees": "Активні співробітники",
+        "empty": "Поки немає локацій."
+      }
     },
     "breadcrumbs": {
       "dashboard": "Дашборд",
@@ -142,12 +181,12 @@
         "title": "Додати оцінку",
         "description": "Форма додавання нової оцінки"
       },
-      "search": "Search by employee...",
+      "search": "Пошук за співробітником...",
       "filters": {
-        "store": "Store",
-        "employee": "Employee",
-        "all_stores": "All stores",
-        "all_employees": "All employees"
+        "store": "Магазин",
+        "employee": "Співробітник",
+        "all_stores": "Усі магазини",
+        "all_employees": "Усі співробітники"
       }
     },
     "stats": {
@@ -210,7 +249,7 @@
           },
           "industry": {
             "label": "Індустрія",
-            "placeholder": "Retail, Food, Services..."
+            "placeholder": "Ритейл, їжа, послуги..."
           },
           "description": {
             "label": "Опис",
